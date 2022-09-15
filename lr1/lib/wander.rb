@@ -9,7 +9,6 @@ space_size = {
 n = 10000
 
 experiment = Wander::Experiment.call(space_size: space_size, n: 1000)
+statistic = Wander::Statistic.new(experiment.statistic_data)
 
-statistic = Wander::Statistic.new(experiment.statistic, n)
-
-p statistic
+p statistic.data

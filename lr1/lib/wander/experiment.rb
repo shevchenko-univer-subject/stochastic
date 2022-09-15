@@ -3,16 +3,18 @@ require_relative 'tools/point'
 
 module Wander
   class Experiment
-    attr_reader :statistic
+    attr_reader :statistic_data
     def self.call(*args)
       new(*args).call
     end
 
     def initialize(options = {})
-      @n = options.fetch(:n)
       @space = Tools::Space.new(options.fetch(:space_size))
 
-      @statistic = {
+      @statistic_data = {
+        meta_data: {
+          n: options.fetch(:n)
+        },
         stoped: 0,
         north: 0,
         south: 0,
@@ -22,7 +24,7 @@ module Wander
     end
 
     def call
-      @n.times { iteration } 
+      @statistic_data.dig(:meta_data, :n).times { iteration } 
       self
     end
 
@@ -36,10 +38,10 @@ module Wander
     end
 
     def analize point
-      return @statistic[:stoped] += 1 if point.status == :stoped
+      return @statistic_data[:stoped] += 1 if point.status == :stoped
 
       side = @space.calculate_side(point.position)
-      @statistic[side] += 1
+      @statistic_data[side] += 1
     end
   end
 end
