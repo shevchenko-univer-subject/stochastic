@@ -1,5 +1,5 @@
 require_relative 'space'
-require_relative 'dot'
+require_relative 'point'
 
 module Wander
   class Experiment
@@ -27,7 +27,7 @@ module Wander
     private
 
     def iteration
-      point = Wander::Dot.new(@space.start_position)
+      point = Wander::Point.new(@space.start_position)
       point.move while point.status == :moving && @space.has?(point.position)
 
       analize point

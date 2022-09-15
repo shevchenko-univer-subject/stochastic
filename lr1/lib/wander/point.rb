@@ -1,5 +1,5 @@
 module Wander
-  class Dot
+  class Point
     attr_reader :status, :position
 
     DIRECTIONS = %i[north east south west]
