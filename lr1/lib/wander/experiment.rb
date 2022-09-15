@@ -14,18 +14,17 @@ module Wander
 
     def call
       space = Wander::Space.new(@space_size)
-      iteration(space) 
+      iteration space.start_position
     end
 
     private
 
-    def iteration(space)
-      dot = Wander::Dot.new(space)
-      p dot.status
-       while dot.status == :moving
-          dot.move
-          p dot
-        end
+    def iteration(start_position)
+      dot = Wander::Dot.new(start_position)
+      
+      while dot.status == :moving
+        dot.move
+      end
     end
   end
 end
