@@ -1,15 +1,16 @@
-require_relative 'space'
-require_relative 'point'
+require_relative 'tools/space'
+require_relative 'tools/point'
 
 module Wander
   class Experiment
+    attr_reader :statistic
     def self.call(*args)
       new(*args).call
     end
 
     def initialize(options = {})
       @n = options.fetch(:n)
-      @space = Wander::Space.new(options.fetch(:space_size))
+      @space = Tools::Space.new(options.fetch(:space_size))
 
       @statistic = {
         stoped: 0,
@@ -22,12 +23,13 @@ module Wander
 
     def call
       @n.times { iteration } 
+      self
     end
 
     private
 
     def iteration
-      point = Wander::Point.new(@space.start_position)
+      point = Tools::Point.new(@space.start_position)
       point.move while point.status == :moving && @space.has?(point.position)
 
       analize point

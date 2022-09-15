@@ -1,11 +1,15 @@
 require_relative 'wander/experiment'
+require_relative 'wander/statistic'
 
 space_size = {
   x: 10, 
   y: 10
 }
 
-experiment = Wander::Experiment.new(space_size: space_size, n: 10000)
-experiment.call
+n = 10000
 
-p experiment
+experiment = Wander::Experiment.call(space_size: space_size, n: 1000)
+
+statistic = Wander::Statistic.new(experiment.statistic, n)
+
+p statistic
