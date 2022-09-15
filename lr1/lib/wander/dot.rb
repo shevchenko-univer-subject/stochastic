@@ -22,7 +22,6 @@ module Wander
 
     private
       def move_to direction
-        p direction
         return status_stop unless valid_move? direction
 
         send(bang(direction))

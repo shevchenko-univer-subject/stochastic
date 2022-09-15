@@ -1,9 +1,11 @@
 require_relative 'wander/experiment'
 
 space_size = {
-  x: 20, 
-  y: 30
+  x: 10, 
+  y: 10
 }
 
-exited_points_count = Wander::Experiment.call(space: space_size, n: 10000)
+experiment = Wander::Experiment.new(space_size: space_size, n: 10000)
+experiment.call
 
+p experiment
