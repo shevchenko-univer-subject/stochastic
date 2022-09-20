@@ -10,7 +10,7 @@ module Wander
         @start_position = random_start_position
       end
 
-      def has? point
+      def has?(point)
         correct_along_axis(:x, point) && correct_along_axis(:y, point)
       end
 

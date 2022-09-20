@@ -4,7 +4,7 @@ module Wander
 
     def initialize(data)
       @meta_data = data[:meta_data]
-      @raw_data = data.reject { |e| e == :meta_data }
+      @raw_data  = data.reject { |e| e == :meta_data }
 
       @data = process_raw_data
     end
@@ -23,7 +23,7 @@ module Wander
       end
 
       def avarage_value(situation) 
-        @raw_data[situation]/@meta_data[:n].to_f
+        @raw_data[situation]/@meta_data[:sample_size].to_f
       end
   end
 end

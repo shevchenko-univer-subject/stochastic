@@ -13,7 +13,7 @@ module Wander
 
       @statistic_data = {
         meta_data: {
-          n: options.fetch(:n)
+          sample_size: options.fetch(:sample_size)
         },
         stoped: 0,
         north: 0,
@@ -24,7 +24,7 @@ module Wander
     end
 
     def call
-      @statistic_data.dig(:meta_data, :n).times do 
+      sample_size.times do 
         build_point
         run_point
         analize_path_of_point
