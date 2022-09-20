@@ -64,6 +64,7 @@ module Wander
           ((symbol.to_s) + '!').to_sym
         end
 
+    #===== MoveModule
         def toggle side
           case side
           when :north
@@ -76,7 +77,8 @@ module Wander
             :east
           end
         end
-      #===== move
+        
+      #===== Move
         def north
           @position.merge(y: @position[:y]+1)
         end
@@ -93,7 +95,7 @@ module Wander
           @position.merge(x: @position[:x]-1)
         end
 
-      #===== bang move
+      #===== MoveBang!
         def north!
           @position = north
         end

@@ -24,20 +24,27 @@ module Wander
     end
 
     def call
-      @statistic_data.dig(:meta_data, :n).times { iteration } 
-      self
+      @statistic_data.dig(:meta_data, :n).times do 
+        build_point
+        run_point
+        analize_path_of_point
+      end 
+      return self
     end
 
     private
 
-    def iteration
-      point = Tools::Point.new(@space.start_position)
-      point.move while point.status == :moving && @space.has?(point.position)
+    attr_accessor :point
 
-      analize point
+    def run_point
+      point.move while point.status == :moving && @space.has?(point.position)
     end
 
-    def analize point
+    def build_point
+      point = Tools::Point.new(@space.start_position)
+    end
+
+    def analize_path_of_point
       return @statistic_data[:stoped] += 1 if point.status == :stoped
 
       side = @space.calculate_side(point.position)
