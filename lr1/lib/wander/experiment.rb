@@ -36,12 +36,16 @@ module Wander
 
     attr_accessor :point
 
+    def sample_size
+      @statistic_data.dig(:meta_data, :sample_size)
+    end
+
     def run_point
       point.move while point.status == :moving && @space.has?(point.position)
     end
 
     def build_point
-      point = Tools::Point.new(@space.start_position)
+      self.point = Tools::Point.new(@space.start_position)
     end
 
     def analize_path_of_point
