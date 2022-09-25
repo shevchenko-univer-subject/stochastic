@@ -13,7 +13,9 @@ module Wander
 
       @statistic_data = {
         meta_data: {
-          sample_size: options.fetch(:sample_size)
+          sample_size: options.fetch(:sample_size),
+          space_size:  options.fetch(:space_size),
+          start_position: @space.start_position
         },
         stoped: 0,
         north: 0,

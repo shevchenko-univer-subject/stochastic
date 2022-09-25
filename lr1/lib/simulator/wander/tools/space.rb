@@ -43,7 +43,7 @@ module Wander
 
 
         def random_start_position
-          @start_position = {
+          {
             x: Random.rand(@border_along_x),
             y: Random.rand(@border_along_y)
           }

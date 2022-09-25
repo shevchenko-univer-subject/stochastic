@@ -1,6 +1,6 @@
 module Wander
   class Statistic
-    attr_reader :data
+    attr_reader :data, :meta_data
 
     def initialize(data)
       @meta_data = data[:meta_data]
