@@ -4,8 +4,10 @@ module Wander
       attr_reader :start_position
 
       def initialize(options = {})
-        @border_along_x = options.fetch(:x)
-        @border_along_y = options.fetch(:y) 
+        valid options, [:x, :y]
+
+        @border_along_x = options[:x]
+        @border_along_y = options[:y] 
 
         @start_position = random_start_position
       end
@@ -27,6 +29,13 @@ module Wander
       end
 
       private
+
+        def valid hash, options
+          options.each do |option|
+            raise "#{option} should to be positive" unless hash.fetch(option).positive?
+          end
+          
+        end
 
         def correct_along_axis(axis, point)  
           eval "#{point[axis]}.between?(0, @border_along_#{axis})"
