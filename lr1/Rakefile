@@ -1,3 +1,7 @@
-task :run do 
-  sh 'ruby lib/wander.rb'
+task :simulate do 
+  sh 'ruby lib/simulator/wander.rb'
+end
+
+task :calc do 
+  sh 'ruby lib/calculator/wander.rb'
 end
