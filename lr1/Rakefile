@@ -1,9 +1,11 @@
 namespace :simulate do 
   task :manage do
-    sh 'ruby lib/managed_simulator/wander.rb'
+    require_relative 'lib/managed_simulator/wander'
+    ManagedSimulator.run
   end
 
   task :unmanage do
-    sh 'ruby lib/unmanaged_simulator/wander.rb'
+    require_relative 'lib/unmanaged_simulator/wander'
+    UnmanagedSimulator.run
   end
 end
