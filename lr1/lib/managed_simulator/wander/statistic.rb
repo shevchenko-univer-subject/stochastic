@@ -1,7 +1,7 @@
 module ManagedSimulator
   module Wander
     class Statistic
-      attr_reader :data
+      attr_reader :data, :meta
 
       def self.call(*args)
         new(*args).call
@@ -41,7 +41,7 @@ module ManagedSimulator
 
         def calculate_uncertainty(situation)
           exit_prob = calculate_exit_probability situation
-          Math.sqrt( exit_prob*(1-exit_prob) / @meta[:sample_size] )
+          Math.sqrt( exit_prob*(1-exit_prob) / @meta[:sample_size] ).floor(5)
         end
     end
   end
