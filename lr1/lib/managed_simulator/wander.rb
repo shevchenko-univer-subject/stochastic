@@ -1,5 +1,6 @@
 module ManagedSimulator
   require_relative 'wander/experiment'
+  require_relative 'wander/statistic'
 
   data = {
     meta: {
@@ -15,5 +16,6 @@ module ManagedSimulator
   }
 
   experiment = Wander::Experiment.call(data)
-  p experiment.collected_data
+  statistic = Wander::Statistic.call(experiment.collected_data)
+  p statistic.data
 end
