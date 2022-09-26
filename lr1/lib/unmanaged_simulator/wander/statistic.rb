@@ -1,11 +1,11 @@
 module UnmanagedSimulator
   module Wander
     class Statistic
-      attr_reader :data, :meta_data
+      attr_reader :data, :meta
 
       def initialize(data)
-        @meta_data = data[:meta_data]
-        @raw_data  = data.reject { |e| e == :meta_data }
+        @meta = data[:meta]
+        @raw_data  = data.reject { |e| e == :meta }
 
         @data = process_raw_data
       end
@@ -24,7 +24,7 @@ module UnmanagedSimulator
         end
 
         def avarage_value(situation) 
-          @raw_data[situation]/@meta_data[:sample_size].to_f
+          @raw_data[situation]/@meta[:sample_size].to_f
         end
     end
   end

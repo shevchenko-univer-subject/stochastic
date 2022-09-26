@@ -12,7 +12,7 @@ module UnmanagedSimulator
         @space = Tools::Space.new(options.fetch(:space_size))
 
         @statistic_data = {
-          meta_data: {
+          meta: {
             sample_size: options.fetch(:sample_size),
             space_size:  options.fetch(:space_size),
             start_position: @space.start_position
@@ -39,7 +39,7 @@ module UnmanagedSimulator
       attr_accessor :point
 
       def sample_size
-        @statistic_data.dig(:meta_data, :sample_size)
+        @statistic_data.dig(:meta, :sample_size)
       end
 
       def run_point

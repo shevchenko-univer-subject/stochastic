@@ -26,7 +26,7 @@ module UnmanagedSimulator
   statistic  = Wander::Statistic.new(experiment.statistic_data)
 
   print "Start position was "
-  puts "[x = #{statistic.meta_data[:start_position][:x]}, y = #{statistic.meta_data[:start_position][:y]}]"
+  puts "[x = #{statistic.meta[:start_position][:x]}, y = #{statistic.meta[:start_position][:y]}]"
 
   puts "q for north: #{statistic.data[:north]}"
   puts "q for south: #{statistic.data[:south]}"
