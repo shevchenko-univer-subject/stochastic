@@ -9,6 +9,7 @@ RSpec.describe ManagedSimulator::Wander do
       statistic.data.keys.each do |situation|
         delta = (data.dig(:probability, situation) - statistic.data.dig(situation, :exit_prob)).abs
         border = statistic.data.dig(situation, :uncertainty) * 3
+
         expect(delta).to be <= border
       end
     end

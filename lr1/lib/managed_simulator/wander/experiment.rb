@@ -7,7 +7,7 @@ module ManagedSimulator
 
       def initialize(data)
         @meta = data[:meta]
-        @probability = data[:probability]
+        @raw_probability = data[:probability]
         @result = {
           stopped: 0,
           north: 0,
@@ -19,7 +19,7 @@ module ManagedSimulator
 
       def call
         set_start_position
-        recalc_probability_for_sides
+        calc_probability_for_sides
 
         sample_size.times do 
           record_result(random_situation)
@@ -29,8 +29,8 @@ module ManagedSimulator
 
       def collected_data
         {
-          meta: @meta,  
-          probability: @probability,
+          meta: @meta.merge(start_position: @start_position),  
+          probability: @raw_probability,
           result: @result
         }
       end
@@ -60,16 +60,18 @@ module ManagedSimulator
             y: Random.rand(@meta.dig(:space_size, :y))
           }
         end
-        def recalc_probability_for_sides
-          koef = {
+        def calc_probability_for_sides
+          @probability = {
             north:                                @start_position[:y] /@meta.dig(:space_size, :y).to_f,
             south:  (@meta.dig(:space_size, :y) - @start_position[:y])/@meta.dig(:space_size, :y).to_f,
             east:                                 @start_position[:x] /@meta.dig(:space_size, :x).to_f,
             west:   (@meta.dig(:space_size, :x) - @start_position[:x])/@meta.dig(:space_size, :x).to_f
           }
-          koef.keys.each do |side|
-            @probability[side] *= koef[side]*10
+          @probability.keys.each do |side|
+            @probability[side] *= @raw_probability[side]
           end
+
+          @probability.merge!(stopped: @raw_probability[:stopped])
         end
     end
   end
