@@ -17,7 +17,11 @@ RSpec.describe ManagedSimulator::Wander do
       let(:data) do 
         {
           meta: {
-            sample_size: nil
+            sample_size: nil,
+            space_size: {
+              x: 10,
+              y: 10
+            }
           },
           probability: {
             north:   0.25,
@@ -42,7 +46,11 @@ RSpec.describe ManagedSimulator::Wander do
       let(:data) do 
         {
           meta: {
-            sample_size: 10000
+            sample_size: 10000,
+            space_size: {
+              x: 10,
+              y: 10
+            }
           }
         }
       end

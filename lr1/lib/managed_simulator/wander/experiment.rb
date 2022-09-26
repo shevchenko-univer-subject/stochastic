@@ -18,7 +18,8 @@ module ManagedSimulator
       end
 
       def call
-        validate_probability_data
+        set_start_position
+        recalc_probability_for_sides
 
         sample_size.times do 
           record_result(random_situation)
@@ -28,19 +29,15 @@ module ManagedSimulator
 
       def collected_data
         {
-          meta: @meta,
+          meta: @meta,  
           probability: @probability,
           result: @result
         }
       end
       
       private
-        def validate_probability_data
-          raise 'Sum of probability should to be equal 1' unless @probability.values.sum == 1
-        end
-
         def random_situation
-          rand_v = Random.rand
+          rand_v = Random.rand(@probability.values.sum)
           from = 0; to = 0
 
           @probability.each do |situation, prob|
@@ -55,6 +52,24 @@ module ManagedSimulator
 
         def sample_size
           @meta[:sample_size]
+        end
+
+        def set_start_position
+          @start_position = {
+            x: Random.rand(@meta.dig(:space_size, :x)),
+            y: Random.rand(@meta.dig(:space_size, :y))
+          }
+        end
+        def recalc_probability_for_sides
+          koef = {
+            north:                                @start_position[:y] /@meta.dig(:space_size, :y).to_f,
+            south:  (@meta.dig(:space_size, :y) - @start_position[:y])/@meta.dig(:space_size, :y).to_f,
+            east:                                 @start_position[:x] /@meta.dig(:space_size, :x).to_f,
+            west:   (@meta.dig(:space_size, :x) - @start_position[:x])/@meta.dig(:space_size, :x).to_f
+          }
+          koef.keys.each do |side|
+            @probability[side] *= koef[side]*10
+          end
         end
     end
   end

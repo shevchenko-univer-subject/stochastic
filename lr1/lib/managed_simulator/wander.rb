@@ -10,7 +10,8 @@ module ManagedSimulator
     data = if STDIN.gets.chomp == 'y'
       empty_data = {
         meta: {
-          sample_size: nil
+          sample_size: nil,
+          space_size: nil
         },
         probability: {
           north:  nil,
@@ -24,6 +25,13 @@ module ManagedSimulator
       print 'Monte-Carlo sample size is '
       empty_data[:meta].merge!(sample_size: STDIN.gets.chomp.to_i)
 
+      puts "Space size is"
+      print "\tx = "
+      x = STDIN.gets.chomp.to_i
+      print "\ty = "
+      y = STDIN.gets.chomp.to_i
+      empty_data[:meta].merge!(space_size: {x: x, y: y})
+
       %i[north south east west stopped].each do |el|
         print "probability #{el}\t= "
         value = STDIN.gets.chomp.to_f
@@ -33,7 +41,11 @@ module ManagedSimulator
     else
       {
         meta: {
-          sample_size: 10000
+          sample_size: 10000,
+          space_size: {
+            x: 10,
+            y: 10
+          }
         },
         probability: {
           north:  0.25,
