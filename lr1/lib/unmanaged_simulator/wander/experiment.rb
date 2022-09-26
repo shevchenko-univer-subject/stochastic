@@ -17,7 +17,7 @@ module UnmanagedSimulator
             space_size:  options.fetch(:space_size),
             start_position: @space.start_position
           },
-          stoped: 0,
+          stopped: 0,
           north: 0,
           south: 0,
           east: 0,
@@ -51,7 +51,7 @@ module UnmanagedSimulator
       end
 
       def analize_path_of_point
-        return @statistic_data[:stoped] += 1 if point.status == :stoped
+        return @statistic_data[:stopped] += 1 if point.status == :stopped
 
         side = @space.calculate_side(point.position)
         @statistic_data[side] += 1

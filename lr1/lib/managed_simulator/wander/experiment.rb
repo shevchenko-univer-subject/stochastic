@@ -9,7 +9,7 @@ module ManagedSimulator
         @meta = data[:meta]
         @probability = data[:probability]
         @result = {
-          stoped: 0,
+          stopped: 0,
           north: 0,
           south: 0,
           east: 0,

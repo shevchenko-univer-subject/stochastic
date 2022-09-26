@@ -7,7 +7,7 @@ module UnmanagedSimulator
         DIRECTIONS = %i[north east south west]
         STATUS = {
           moving: :moving, 
-          stoped: :stoped
+          stopped: :stopped
         }
 
         def initialize(start_position)
@@ -50,11 +50,11 @@ module UnmanagedSimulator
           end
 
           def cannot_move?
-            [ STATUS[:stoped], STATUS[:exited] ].include?(@status)
+            [ STATUS[:stopped], STATUS[:exited] ].include?(@status)
           end
 
           def status_stop
-            @status = STATUS[:stoped]
+            @status = STATUS[:stopped]
           end
 
           def status_exit

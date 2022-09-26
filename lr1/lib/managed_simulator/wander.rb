@@ -16,14 +16,14 @@ module ManagedSimulator
         south:  nil,
         east:   nil,
         west:   nil,
-        stoped: nil
+        stopped: nil
       }
     }
 
     print 'Monte-Carlo sample size is '
     empty_data[:meta].merge!(sample_size: gets.chomp.to_i)
 
-    %i[north south east west stoped].each do |el|
+    %i[north south east west stopped].each do |el|
       print "probability #{el}\t= "
       value = gets.chomp.to_f
       empty_data[:probability].merge!({"#{el}": value})
@@ -39,7 +39,7 @@ module ManagedSimulator
         south:  0.25,
         east:   0.25,
         west:   0.25,
-        stoped: 0
+        stopped: 0
       }
     }
   end

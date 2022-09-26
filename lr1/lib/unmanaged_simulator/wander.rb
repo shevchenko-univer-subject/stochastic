@@ -32,5 +32,5 @@ module UnmanagedSimulator
   puts "q for south: #{statistic.data[:south]}"
   puts "q for east:  #{statistic.data[:east]}"
   puts "q for west:  #{statistic.data[:west]}"
-  puts "q stopped:   #{statistic.data[:stoped]}"
+  puts "q stopped:   #{statistic.data[:stopped]}"
 end
