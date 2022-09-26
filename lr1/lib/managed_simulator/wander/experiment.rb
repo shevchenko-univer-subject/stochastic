@@ -1,4 +1,4 @@
-module Calculator
+module ManagedSimulator
   module Wander
     class Experiment
       def self.call(*args)

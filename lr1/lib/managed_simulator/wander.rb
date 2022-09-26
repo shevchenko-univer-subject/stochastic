@@ -1,6 +1,5 @@
-module Calculator
+module ManagedSimulator
   require_relative 'wander/experiment'
-  require_relative 'wander/statistic'
 
   data = {
     meta: {

@@ -1,4 +1,4 @@
-module Simulator
+module UnmanagedSimulator
   require_relative 'wander/experiment'
   require_relative 'wander/statistic'
 

@@ -1,4 +1,4 @@
-module Simulator
+module UnmanagedSimulator
   module Wander
     module Tools
       class Point

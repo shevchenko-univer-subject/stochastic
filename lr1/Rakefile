@@ -1,7 +1,9 @@
-task :simulate do 
-  sh 'ruby lib/simulator/wander.rb'
-end
+namespace :simulate do 
+  task :manage do
+    sh 'ruby lib/managed_simulator/wander.rb'
+  end
 
-task :calc do 
-  sh 'ruby lib/calculator/wander.rb'
+  task :unmanage do
+    sh 'ruby lib/unmanaged_simulator/wander.rb'
+  end
 end

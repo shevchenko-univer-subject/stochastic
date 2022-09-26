@@ -1,4 +1,4 @@
-module Simulator
+module UnmanagedSimulator
   module Wander
     class Statistic
       attr_reader :data, :meta_data

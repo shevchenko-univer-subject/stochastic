@@ -1,4 +1,4 @@
-module Simulator
+module UnmanagedSimulator
   module Wander
     require_relative 'tools/space'
     require_relative 'tools/point'
