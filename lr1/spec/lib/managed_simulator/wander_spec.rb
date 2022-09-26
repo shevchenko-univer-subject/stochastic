@@ -1,15 +1,77 @@
 RSpec.describe ManagedSimulator::Wander do 
-  describe 'symmetry  without stopping' do
-    describe 'without stopping' do 
-      example 'has small sample size' do 
-      end
-      example 'has large sample size' do 
+  describe 'symmetry' do
+
+    around(:each) do |example|
+      example.run
+      experiment = described_class::Experiment.call(data)
+      statistic = Wander::Statistic.call(experiment.collected_data)
+
+      statistic.data.keys.each do |situation|
+        delta = (data.dig(:probability, situation) - statistic.data.dig(situation, :exit_prob)).abs
+        border = statistic.data.dig(situation, :uncertainty) * 3
+        expect(delta).to be <= border
       end
     end
-    describe 'with stopping' do 
-      example 'which weak' do 
+
+    describe 'without stopping' do
+      let(:data) do 
+        {
+          meta: {
+            sample_size: nil
+          },
+          probability: {
+            north:   0.25,
+            south:   0.25,
+            east:    0.25,
+            west:    0.25,
+            stopped: 0
+          }
+        }
+      end 
+
+      example 'has small sample size' do 
+        data[:meta].merge!(sample_size: 100)
       end
+
+      example 'has large sample size' do
+        data[:meta].merge!(sample_size: 10000)
+      end
+    end
+
+    describe 'with stopping' do 
+      let(:data) do 
+        {
+          meta: {
+            sample_size: 10000
+          }
+        }
+      end
+
+      example 'which weak' do 
+        probability = {
+          probability: {
+            north:   0.24,
+            south:   0.24,
+            east:    0.24,
+            west:    0.24,
+            stopped: 0.04
+          }
+        }
+        data.merge!(probability)
+      end
+
       example 'which hard' do 
+        probability = {
+          probability: {
+            north:   0.2,
+            south:   0.2,
+            east:    0.2,
+            west:    0.2,
+            stopped: 0.2
+          }
+        }
+        data.merge!(probability)
+
       end
     end
   end
