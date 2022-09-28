@@ -1,7 +1,7 @@
 module ManagedSimulator
   module Wander
     class Statistic
-      attr_reader :data, :meta
+      attr_reader :data, :meta, :probability
 
       def self.call(*args)
         new(*args).call
@@ -21,27 +21,27 @@ module ManagedSimulator
 
       private
         def process_raw_data 
-          @raw_data.keys.map do |situation| 
-            collect_hash_of_results_for(situation)
+          @raw_data.keys.map do |kase| 
+            collect_hash_of_results_for(kase)
           end.reduce Hash.new, :merge
         end
 
-        def collect_hash_of_results_for(situation)
+        def collect_hash_of_results_for(kase)
           {
-            "#{situation}": {
-              exit_prob:   calculate_exit_probability(situation),
-              uncertainty: calculate_uncertainty(situation)
+            "#{kase}": {
+              exit_prob:   calculate_exit_probability(kase),
+              uncertainty: calculate_uncertainty(kase)
             }
           }
         end
 
-        def calculate_exit_probability(situation)
-          @raw_data[situation]/@meta[:sample_size].to_f
+        def calculate_exit_probability(kase)
+          @raw_data[kase]/@meta[:sample_size].to_f
         end
 
-        def calculate_uncertainty(situation)
-          exit_prob = calculate_exit_probability situation
-          Math.sqrt( exit_prob*(1-exit_prob) / @meta[:sample_size] ).floor(5)
+        def calculate_uncertainty(kase)
+          exit_prob = calculate_exit_probability kase
+          Math.sqrt( exit_prob*(1-exit_prob) / @meta[:sample_size] )
         end
     end
   end

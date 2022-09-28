@@ -19,7 +19,7 @@ module ManagedSimulator
 
       def call
         set_start_position
-        calc_probability_for_sides
+        set_probability_take_positions
 
         sample_size.times do 
           record_result(random_situation)
@@ -29,8 +29,8 @@ module ManagedSimulator
 
       def collected_data
         {
-          meta: @meta.merge(start_position: @start_position),  
-          probability: @raw_probability,
+          meta: @meta,
+          probability: @probability,
           result: @result
         }
       end
@@ -40,14 +40,14 @@ module ManagedSimulator
           rand_v = Random.rand(@probability.values.sum)
           from = 0; to = 0
 
-          @probability.each do |situation, prob|
+          @probability.each do |kase, prob|
             from = to; to += prob
-            return situation if rand_v.between?(from, to)
+            return kase if rand_v.between?(from, to)
           end
         end
 
-        def record_result situation
-          @result[situation] += 1
+        def record_result kase
+          @result[kase] += 1
         end
 
         def sample_size
@@ -55,23 +55,33 @@ module ManagedSimulator
         end
 
         def set_start_position
-          @start_position = {
+          @meta.merge!(start_position: {
             x: Random.rand(@meta.dig(:space_size, :x)),
             y: Random.rand(@meta.dig(:space_size, :y))
-          }
+          })
         end
-        def calc_probability_for_sides
+
+        def set_probability_take_positions
           @probability = {
-            north:                                @start_position[:y] /@meta.dig(:space_size, :y).to_f,
-            south:  (@meta.dig(:space_size, :y) - @start_position[:y])/@meta.dig(:space_size, :y).to_f,
-            east:                                 @start_position[:x] /@meta.dig(:space_size, :x).to_f,
-            west:   (@meta.dig(:space_size, :x) - @start_position[:x])/@meta.dig(:space_size, :x).to_f
+            north:                                @meta.dig(:space_size, :y) /@meta.dig(:space_size, :y).to_f,
+            south:  (@meta.dig(:space_size, :y) - @meta.dig(:space_size, :y))/@meta.dig(:space_size, :y).to_f,
+            east:                                 @meta.dig(:space_size, :x) /@meta.dig(:space_size, :x).to_f,
+            west:   (@meta.dig(:space_size, :x) - @meta.dig(:space_size, :x))/@meta.dig(:space_size, :x).to_f
           }
           @probability.keys.each do |side|
             @probability[side] *= @raw_probability[side]
           end
 
           @probability.merge!(stopped: @raw_probability[:stopped])
+          normalize_probability
+        end
+
+        def normalize_probability
+          nomalization_koef = 1/@probability.values.sum
+
+          @probability.keys.each do |kase|
+            @probability[kase] *= nomalization_koef
+          end
         end
     end
   end

@@ -5,11 +5,9 @@ RSpec.describe ManagedSimulator::Wander do
       example.run
       experiment = described_class::Experiment.call(data)
       statistic = Wander::Statistic.call(experiment.collected_data)
-
       statistic.data.keys.each do |situation|
-        delta = (data.dig(:probability, situation) - statistic.data.dig(situation, :exit_prob)).abs
+        delta = (statistic.probability[situation] - statistic.data.dig(situation, :exit_prob)).abs
         border = statistic.data.dig(situation, :uncertainty) * 3
-
         expect(delta).to be <= border
       end
     end
@@ -25,17 +23,17 @@ RSpec.describe ManagedSimulator::Wander do
             }
           },
           probability: {
+            stopped: 0,
             north:   0.25,
             south:   0.25,
             east:    0.25,
-            west:    0.25,
-            stopped: 0
+            west:    0.25
           }
         }
       end 
 
       example 'has small sample size' do 
-        data[:meta].merge!(sample_size: 100)
+        data[:meta].merge!(sample_size: 10)
       end
 
       example 'has large sample size' do
@@ -52,18 +50,19 @@ RSpec.describe ManagedSimulator::Wander do
               x: 10,
               y: 10
             }
-          }
+          },
+          probability: nil
         }
       end
 
       example 'which weak' do 
         probability = {
           probability: {
+            stopped: 0.04,
             north:   0.24,
             south:   0.24,
             east:    0.24,
-            west:    0.24,
-            stopped: 0.04
+            west:    0.24
           }
         }
         data.merge!(probability)
@@ -72,11 +71,11 @@ RSpec.describe ManagedSimulator::Wander do
       example 'which hard' do 
         probability = {
           probability: {
+            stopped: 0.2,
             north:   0.2,
             south:   0.2,
             east:    0.2,
-            west:    0.2,
-            stopped: 0.2
+            west:    0.2
           }
         }
         data.merge!(probability)
