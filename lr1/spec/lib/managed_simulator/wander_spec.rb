@@ -1,17 +1,15 @@
 RSpec.describe ManagedSimulator::Wander do 
-  describe 'symmetry' do
-
-    around(:each) do |example|
-      example.run
-      experiment = described_class::Experiment.call(data)
-      statistic = Wander::Statistic.call(experiment.collected_data)
-      statistic.data.keys.each do |situation|
-        delta = (statistic.probability[situation] - statistic.data.dig(situation, :exit_prob)).abs
-        border = statistic.data.dig(situation, :uncertainty) * 3
-        expect(delta).to be <= border
-      end
+  after(:each) do 
+    experiment = described_class::Experiment.call(data)
+    statistic = Wander::Statistic.call(experiment.collected_data)
+    statistic.data.keys.each do |situation|
+      delta = (statistic.probability[situation] - statistic.data.dig(situation, :exit_prob)).abs
+      border = statistic.data.dig(situation, :uncertainty) * 3
+      expect(delta).to be <= border
     end
+  end
 
+  describe 'symmetry' do
     describe 'without stopping' do
       let(:data) do 
         {
@@ -20,6 +18,10 @@ RSpec.describe ManagedSimulator::Wander do
             space_size: {
               x: 10,
               y: 10
+            },
+            start_position: {
+              x: 5,
+              y: 5
             }
           },
           probability: {
@@ -49,6 +51,10 @@ RSpec.describe ManagedSimulator::Wander do
             space_size: {
               x: 10,
               y: 10
+            },
+            start_position: {
+              x: 5,
+              y: 5
             }
           },
           probability: nil
@@ -79,15 +85,39 @@ RSpec.describe ManagedSimulator::Wander do
           }
         }
         data.merge!(probability)
-
       end
     end
   end
 
   describe 'one-dimensional horizontal wandering' do 
+    let(:data) do 
+      {
+        meta: {
+          sample_size: 10000,
+          space_size: {
+            x: 10,
+            y: 10
+          },
+          start_position: {
+            x: 5,
+            y: nil
+          }
+        },
+        probability: {
+          stopped: 0,
+          north:   0,
+          south:   0.5,
+          east:    0,
+          west:    0.5
+        }
+      }
+    end 
+
     example 'has symmetry position' do 
+      data[:meta][:start_position].merge!(y: 5)
     end
     example 'has asymmetry position' do 
+      data[:meta][:start_position].merge!(y: 3)
     end
   end
 end
