@@ -1,7 +1,9 @@
 namespace :simulate do 
   task :manage do
     require_relative 'lib/managed_simulator/wander'
-    ManagedSimulator.run
+    include ManagedSimulator
+    
+    run
   end
 
   task :unmanage do
