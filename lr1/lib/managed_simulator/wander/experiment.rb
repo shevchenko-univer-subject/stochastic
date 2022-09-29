@@ -7,7 +7,8 @@ module ManagedSimulator
 
       def initialize(data)
         @meta = data[:meta]
-        @raw_probability = data[:probability]
+        set_probability_take_about_positions(data[:probability])
+
         @result = {
           stopped: 0,
           north: 0,
@@ -18,9 +19,6 @@ module ManagedSimulator
       end
 
       def call
-        set_start_position
-        set_probability_take_positions
-
         sample_size.times do 
           record_result(random_situation)
         end
@@ -54,25 +52,18 @@ module ManagedSimulator
           @meta[:sample_size]
         end
 
-        def set_start_position
-          @meta.merge!(start_position: {
-            x: Random.rand(@meta.dig(:space_size, :x)),
-            y: Random.rand(@meta.dig(:space_size, :y))
-          })
-        end
-
-        def set_probability_take_positions
+        def set_probability_take_about_positions(raw_probability)
           @probability = {
-            north:                                @meta.dig(:space_size, :y) /@meta.dig(:space_size, :y).to_f,
-            south:  (@meta.dig(:space_size, :y) - @meta.dig(:space_size, :y))/@meta.dig(:space_size, :y).to_f,
-            east:                                 @meta.dig(:space_size, :x) /@meta.dig(:space_size, :x).to_f,
-            west:   (@meta.dig(:space_size, :x) - @meta.dig(:space_size, :x))/@meta.dig(:space_size, :x).to_f
+            north:                                @meta.dig(:start_position, :y) /@meta.dig(:space_size, :y).to_f,
+            south:  (@meta.dig(:space_size, :y) - @meta.dig(:start_position, :y))/@meta.dig(:space_size, :y).to_f,
+            east:                                 @meta.dig(:start_position, :x) /@meta.dig(:space_size, :x).to_f,
+            west:   (@meta.dig(:space_size, :x) - @meta.dig(:start_position, :x))/@meta.dig(:space_size, :x).to_f
           }
           @probability.keys.each do |side|
-            @probability[side] *= @raw_probability[side]
+            @probability[side] *= raw_probability[side]
           end
 
-          @probability.merge!(stopped: @raw_probability[:stopped])
+          @probability.merge!(stopped: raw_probability[:stopped])
           normalize_probability
         end
 
