@@ -13,7 +13,7 @@ module ManagedSimulator
       default_data
     end
 
-    print_data
+    print_data(data)
 
     puts "\n"
     puts 'Running...' 
@@ -28,15 +28,15 @@ module ManagedSimulator
   
   private
     def print_statistic_info(statistic)
+      puts 'Info: '
       statistic.data.keys.each do |el|
-        puts 'Info: '
-          puts "\t #{el.capitalize}: "
-          puts "\t\t Exit probability #{statistic.data[el][:exit_prob]}"
-          puts "\t\t Uncertaity #{statistic.data[el][:uncertainty]}"
+        puts "\t #{el.capitalize}: "
+        puts "\t\t Exit probability #{statistic.data[el][:exit_prob]}"
+        puts "\t\t Uncertaity #{statistic.data[el][:uncertainty]}"
       end
     end
 
-    def print_data
+    def print_data(data)
       puts "\n"
       puts "Monte-Carlo sample size is #{data[:meta][:sample_size]}"
       puts "Probability values is #{data[:probability].inspect}"
