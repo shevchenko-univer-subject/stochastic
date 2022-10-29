@@ -1,9 +1,8 @@
 module Integral
   module Engine
     class SimplestMonteCarlo < Mode
-      p self
-
-      def self.compute_function(borders, func, quantity)
+      
+      def compute_function(borders, func, quantity)
         sum = quantity.times.map do
           func.call(rand(borders))
         end.reduce(:+)
@@ -12,6 +11,7 @@ module Integral
       end
 
       def compute_mistake
+        raise NameError, "undefined instance variable `@volume` for #{self.class}" if @volume.nil? 
         raw_mistake = AXISES.map do |axis|
           amplitude(@borders[axis]) * Math.sqrt(dispersion(axis))
         end.reduce(:+)

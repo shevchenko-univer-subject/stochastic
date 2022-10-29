@@ -38,6 +38,8 @@ task :run do
   c.procces
   pp c.engine
 
-  c.engine = Integral::Engine::Mode.new(collected_borders, collected_funcs, quantity)
+
+  c.engine = Integral::Engine::GeometricMonteCarlo.new(collected_borders, collected_funcs, quantity)
   c.procces
+  pp c.engine
 end

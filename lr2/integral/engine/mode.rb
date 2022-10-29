@@ -6,7 +6,7 @@ module Integral
 
     class Mode
       prepend ModeAbstract if self.is_a? Mode
-      
+
       def self.compute(*args)
         new(*args).compute
       end
@@ -31,17 +31,9 @@ module Integral
         end.reduce(:*)
       end
 
-      def compute_function(*args)
-        self.class.compute_function(*args)
-      end 
-
       private
-        def self.amplitude(range)
-          range.max.to_f - range.min.to_f
-        end
-
         def amplitude(range)
-          self.class.amplitude(range)
+          (range.max.to_f - range.min.to_f).abs
         end
     end
   end

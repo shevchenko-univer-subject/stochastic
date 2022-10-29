@@ -1,9 +1,8 @@
 module Integral
   module Engine
     class Rectangles < Mode
-      p self
 
-      def self.compute_function(borders, func, quantity)
+      def compute_function(borders, func, quantity)
         sum = borders.step(quantity).map do |var|
           func.call(var)
         end.reduce(:+)

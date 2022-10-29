@@ -6,7 +6,7 @@ require_relative "engine/geometric_monte_carlo"
 
 module Integral
   class Calculator
-    p self
+
     attr_accessor :engine
 
     def initialize(engine = nil)
