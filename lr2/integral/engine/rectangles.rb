@@ -1,6 +1,6 @@
 module Integral
   module Engine
-    class Rectangles < MethodX
+    class Rectangles < Mode
       p self
 
       def self.compute_function(borders, func, step)
