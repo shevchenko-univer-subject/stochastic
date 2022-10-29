@@ -1,22 +1,26 @@
 module Integral
   module Engine
     class GeometricMonteCarlo < Mode
-      
-      def compute_function(abscissa_borders, function, quantity)
-        ordinate_borders = find_ordinate_borders(abscissa_borders, function)
+
+      def compute_function(axis)
+        # prepare
+        abscissa_borders = @borders[axis]
+        ordinate_borders = find_ordinate_borders(abscissa_borders, @functions[axis])
 
         amplitude_abscissa_borders = amplitude(abscissa_borders)
         amplitude_ordinate_borders = amplitude(ordinate_borders)
 
-        quantity_success = quantity.times.select do
+        # logic
+        quantity_success = @quantity.times.select do
           abscissa = abscissa_borders.min + amplitude_abscissa_borders * rand(abscissa_borders)
           ordinate = ordinate_borders.min + amplitude_ordinate_borders * rand(abscissa_borders)
 
-          function.call(abscissa) > ordinate
+          @functions[axis].call(abscissa) > ordinate
         end.count
 
+        # result
         raw_result_numerator   = amplitude_abscissa_borders * amplitude_ordinate_borders * quantity_success 
-        raw_result_denominator = quantity  
+        raw_result_denominator = @quantity  
 
         (raw_result_numerator / raw_result_denominator) + ordinate_borders.min
       end

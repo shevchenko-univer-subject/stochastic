@@ -1,13 +1,12 @@
 module Integral
   module Engine
     class SimplestMonteCarlo < Mode
-      
-      def compute_function(borders, func, quantity)
-        sum = quantity.times.map do
-          func.call(rand(borders))
-        end.reduce(:+)
-        amplitude(borders).to_f * sum.to_f / quantity.to_f
 
+      def compute_function(axis)
+        sum = @quantity.times.map do
+          @functions[axis].call(rand(@borders[axis]))
+        end.reduce(:+)
+        amplitude(@borders[axis]).to_f * sum.to_f / @quantity.to_f
       end
 
       def compute_mistake
@@ -30,7 +29,7 @@ module Integral
           raw_dispersion1 =  sum[:pow2] / @quantity.to_f 
           raw_dispersion2 = (sum[:smpl] / @quantity.to_f) ** 2
 
-          raw_dispersion1 - raw_dispersion2/ @quantity.to_f
+          (raw_dispersion1 - raw_dispersion2) / @quantity.to_f
         end
     end
   end

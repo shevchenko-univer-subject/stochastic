@@ -1,6 +1,6 @@
 module ModeAbstract
 
-  def self.compute_function(_borders, _func, _quantity)
+  def self.compute_function(_axis)
     raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
   end
 

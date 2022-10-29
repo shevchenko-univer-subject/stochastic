@@ -27,7 +27,7 @@ module Integral
 
       def compute_volume
         @volume = AXISES.map do |axis|
-          compute_function(@borders[axis], @functions[axis], @quantity)
+          compute_function(axis)
         end.reduce(:*)
       end
 
