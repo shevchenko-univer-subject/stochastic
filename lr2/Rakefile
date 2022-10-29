@@ -4,14 +4,15 @@ require_relative 'integral/calculator'
 
 task :run do
   step = 0.0001
-
-  @quantity = 100_000
+  quantity = 100_000
+  
   a_param = m_param = k_param = 1.0
 
-  borders_x = 0..1
-  borders_y = 0..1
-  borders_z = 0..1
-  
+  # impotant: range should be floatable 
+  borders_x = 0..1.0
+  borders_y = 0..1.0
+  borders_z = 0..1.0
+
   func_x = ->(x) { a_param.to_f * (1.0 - x.to_f) * x.to_f }
   func_y = ->(y) { Math.exp(-m_param.to_f * y.to_f) }
   func_z = ->(z) { Math.sin(Math::PI * k_param.to_f * z.to_f) }
@@ -28,9 +29,15 @@ task :run do
     z: func_z 
   }
 
-  c = Integral::Calculator.new(
-    Integral::Engine::Rectangles.new(collected_borders, collected_funcs, step)
-  )
+  c = Integral::Calculator.new()
+  c.engine = Integral::Engine::Rectangles.new(collected_borders, collected_funcs, step)
   c.procces
   pp c.engine
+
+  c.engine = Integral::Engine::SimplestMonteCarlo.new(collected_borders, collected_funcs, quantity)
+  c.procces
+  pp c.engine
+
+  c.engine = Integral::Engine::Mode.new(collected_borders, collected_funcs, quantity)
+  c.procces
 end

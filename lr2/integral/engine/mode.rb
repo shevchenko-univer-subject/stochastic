@@ -1,35 +1,48 @@
+require_relative 'mode_abstract'
+
 module Integral
   module Engine
     AXISES = %i[x y z]
 
     class Mode
+      prepend ModeAbstract if self.is_a? Mode
+      
       def self.compute(*args)
         new(*args).compute
       end
 
-      def self.compute_function(_borders, _func, _quantity: nil)
-        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
-      end
-
-      def initalize(_borders, _functions, _quantity)
-        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
+      def initialize(borders, functions, quantity)
+        @functions = functions
+        @borders = borders
+        @quantity = quantity
+        
+        @volume = nil
+        @mistake = nil
       end
 
       def compute
-        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
+        compute_volume
+        compute_mistake
       end
 
       def compute_volume
-        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
+        @volume = AXISES.map do |axis|
+          compute_function(@borders[axis], @functions[axis], @quantity)
+        end.reduce(:*)
       end
 
-      def compute_mistake
-        raise NotImplementedError, "#{self.class} has not implemented method '#{__method__}'"
-      end
-
-      def compute_function(_borders, _func, _quantity)
-        self.class.compute_function
+      def compute_function(*args)
+        self.class.compute_function(*args)
       end 
+
+      private
+        def self.amplitude(range)
+          range.max.to_f - range.min.to_f
+        end
+
+        def amplitude(range)
+          self.class.amplitude(range)
+        end
     end
   end
 end

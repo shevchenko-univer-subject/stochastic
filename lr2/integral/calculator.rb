@@ -9,7 +9,7 @@ module Integral
     p self
     attr_accessor :engine
 
-    def initialize(engine)
+    def initialize(engine = nil)
       @engine = engine
     end
     
