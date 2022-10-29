@@ -1,11 +1,8 @@
-require_relative "methods/direct"
-require_relative "methods/rectangles"
-require_relative "methods/simplest_monte_carlo"
-require_relative "methods/geometric_monte_carlo"
-
 module Integral
   module Engine
-    class Method
+    AXISES = %i[x y z]
+
+    class Mode
 
       def self.compute(*args)
         new(*args).compute

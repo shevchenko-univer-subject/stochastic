@@ -1,15 +1,36 @@
+require 'pp'
+
 require_relative 'integral/calculator'
+
 task :run do
-  @x_min = @y_min = @z_min = 0
-  @x_max = @y_max = @z_max = 1
-  @step = 0.0001
+  step = 0.0001
+
   @quantity = 100_000
-  @a_param = @n_param = @k_param = 1.0
+  a_param = m_param = k_param = 1.0
 
+  borders_x = 0..1
+  borders_y = 0..1
+  borders_z = 0..1
+  
+  func_x = ->(x) { a_param.to_f * (1.0 - x.to_f) * x.to_f }
+  func_y = ->(y) { Math.exp(-m_param.to_f * y.to_f) }
+  func_z = ->(z) { Math.sin(Math::PI * k_param.to_f * z.to_f) }
 
+  collected_borders = {
+    x: borders_x,
+    y: borders_y,
+    z: borders_z
+  }
 
-  @func_1 = ->(x) { @a_param.to_f * (1.0 - x.to_f) * x.to_f }
-  @func_2 = ->(y) { Math.exp(-@n_param.to_f * y.to_f) }
-  @func_3 = ->(z) { Math.sin(Math::PI * @k_param.to_f * z.to_f) }
+  collected_funcs = {
+    x: func_x,
+    y: func_y,
+    z: func_z 
+  }
 
+  c = Integral::Calculator.new(
+    Integral::Engine::Rectangles.new(collected_borders, collected_funcs, step)
+  )
+  c.procces
+  pp c.engine
 end
