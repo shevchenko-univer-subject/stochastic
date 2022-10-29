@@ -1,0 +1,15 @@
+require_relative 'integral/calculator'
+task :run do
+  @x_min = @y_min = @z_min = 0
+  @x_max = @y_max = @z_max = 1
+  @step = 0.0001
+  @quantity = 100_000
+  @a_param = @n_param = @k_param = 1.0
+
+
+
+  @func_1 = ->(x) { @a_param.to_f * (1.0 - x.to_f) * x.to_f }
+  @func_2 = ->(y) { Math.exp(-@n_param.to_f * y.to_f) }
+  @func_3 = ->(z) { Math.sin(Math::PI * @k_param.to_f * z.to_f) }
+
+end
