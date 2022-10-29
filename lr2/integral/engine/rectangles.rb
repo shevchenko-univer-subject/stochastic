@@ -3,17 +3,17 @@ module Integral
     class Rectangles < Mode
       p self
 
-      def self.compute_function(borders, func, step)
-        sum = borders.step(step).map do |var|
+      def self.compute_function(borders, func, quantity)
+        sum = borders.quantity(quantity).map do |var|
           func.call(var)
         end.reduce(:+)
-        sum * step
+        sum * quantity
       end
 
-      def initialize(borders, functions, step)
+      def initialize(borders, functions, quantity)
         @functions = functions
         @borders = borders
-        @step = step
+        @quantity = quantity
         
         @volume = nil
         @mistake = nil
@@ -26,15 +26,15 @@ module Integral
 
       def compute_volume
         @volume = AXISES.map do |axis|
-          compute_function(@borders[axis], @functions[axis], @step)
+          compute_function(@borders[axis], @functions[axis], @quantity)
         end.reduce(:*)
       end
 
       def compute_mistake
         raise NameError, "undefined instance variable `@volume` for #{self.class}" if @volume.nil? 
         raw_mistake = AXISES.map do |axis|
-          compute_function(@borders[axis], @functions[axis], @step) - 
-            compute_function(@borders[axis], @functions[axis], @step*2)
+          compute_function(@borders[axis], @functions[axis], @quantity) - 
+            compute_function(@borders[axis], @functions[axis], @quantity*2)
         end.reduce(:+)
         
         @mistake = (raw_mistake/AXISES.size).abs
