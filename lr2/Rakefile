@@ -3,43 +3,58 @@ require 'pp'
 require_relative 'integral/calculator'
 
 task :run do
-  step = 0.0001
-  quantity = 100_000
-  
-  a_param = m_param = k_param = 1.0
+  collected_functions = collect_functions
+  collected_borders   = collect_borders
 
-  # impotant: range should be floatable 
-  borders_x = 0..1.0
-  borders_y = 0..1.0
-  borders_z = 0..1.0
+  step     = 0.0001
+  quantity = 100_000
+
+  integrator = Integral::Calculator.new()
+
+  integrator.engine = Integral::Engine::Direct.new(collected_borders, collected_functions, quantity)
+  direct = integrator.result
+
+  integrator.engine = Integral::Engine::Rectangles.new(collected_borders, collected_functions, step)
+  rectangles = integrator.result
+  rectangles_diff_direct = volume_diff_between(rectangles, direct)
+
+  integrator.engine = Integral::Engine::SimplestMonteCarlo.new(collected_borders, collected_functions, quantity)
+  simplest_mc = integrator.result
+  simplest_diff_direct = volume_diff_between(simplest_mc, direct)
+
+  integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_borders, collected_functions, quantity)
+  geometric_mc = integrator.result
+  geometric_diff_direct = volume_diff_between(geometric_mc, direct)
+end
+
+def volume_diff_between(this, other)
+  (this[:volume] - other[:volume]).abs
+end
+
+def collect_functions
+  a_param = m_param = k_param = 1.0
 
   func_x = ->(x) { a_param.to_f * (1.0 - x.to_f) * x.to_f }
   func_y = ->(y) { Math.exp(-m_param.to_f * y.to_f) }
   func_z = ->(z) { Math.sin(Math::PI * k_param.to_f * z.to_f) }
 
-  collected_borders = {
-    x: borders_x,
-    y: borders_y,
-    z: borders_z
-  }
-
-  collected_funcs = {
+  {
     x: func_x,
     y: func_y,
     z: func_z 
   }
+end
 
-  c = Integral::Calculator.new()
-  c.engine = Integral::Engine::Rectangles.new(collected_borders, collected_funcs, step)
-  c.procces
-  pp c.engine
+def collect_borders
+  border_right = {
+    x: 1,
+    y: 1,
+    z: 1
+  }
 
-  c.engine = Integral::Engine::SimplestMonteCarlo.new(collected_borders, collected_funcs, quantity)
-  c.procces
-  pp c.engine
-
-
-  c.engine = Integral::Engine::GeometricMonteCarlo.new(collected_borders, collected_funcs, quantity)
-  c.procces
-  pp c.engine
+  {
+    x: Range.new(0, border_right[:x].to_f),
+    y: Range.new(0, border_right[:y].to_f),
+    z: Range.new(0, border_right[:z].to_f)
+  }
 end

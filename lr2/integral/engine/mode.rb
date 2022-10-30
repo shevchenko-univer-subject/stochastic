@@ -7,6 +7,8 @@ module Integral
     class Mode
       prepend ModeAbstract if self.is_a? Mode
 
+      attr_reader :volume, :mistake, :quantity
+      
       def self.compute(*args)
         new(*args).compute
       end

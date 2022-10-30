@@ -3,14 +3,14 @@ module Integral
     class GeometricMonteCarlo < Mode
 
       def compute_function(axis)
-        # prepare
+      # prepare
         abscissa_borders = @borders[axis]
         ordinate_borders = find_ordinate_borders(abscissa_borders, @functions[axis])
 
         amplitude_abscissa_borders = amplitude(abscissa_borders)
         amplitude_ordinate_borders = amplitude(ordinate_borders)
 
-        # logic
+      # logic
         quantity_success = @quantity.times.select do
           abscissa = abscissa_borders.min + amplitude_abscissa_borders * rand(abscissa_borders)
           ordinate = ordinate_borders.min + amplitude_ordinate_borders * rand(abscissa_borders)
@@ -18,7 +18,7 @@ module Integral
           @functions[axis].call(abscissa) > ordinate
         end.count
 
-        # result
+      # result
         raw_result_numerator   = amplitude_abscissa_borders * amplitude_ordinate_borders * quantity_success 
         raw_result_denominator = @quantity  
 
@@ -46,7 +46,9 @@ module Integral
         end
 
         def find_ordinate_borders(borders, function)
-          find_verge(:<, borders, function)..find_verge(:>, borders, function)
+          min = find_verge(:<, borders, function)
+          max = find_verge(:>, borders, function)
+          min..max
         end
       
         def dispersion(axis)

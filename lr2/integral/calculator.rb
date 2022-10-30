@@ -7,14 +7,25 @@ require_relative "engine/geometric_monte_carlo"
 module Integral
   class Calculator
 
-    attr_accessor :engine
+    attr_writer :engine
 
     def initialize(engine = nil)
       @engine = engine
     end
     
     def procces
-      result = @engine.compute
+      @engine.compute
+    end
+
+    def result
+      procces if @engine.volume.nil?
+      
+      {
+        mode:     @engine.class,
+        volume:   @engine.volume,
+        mistake:  @engine.mistake,
+        quantity: @engine.quantity
+      }
     end
   end
 end
