@@ -1,8 +1,8 @@
 require_relative 'engine/mode'
-require_relative "engine/direct"
-require_relative "engine/rectangles"
-require_relative "engine/simplest_monte_carlo"
-require_relative "engine/geometric_monte_carlo"
+require_relative "engine/modes/direct"
+require_relative "engine/modes/rectangles"
+require_relative "engine/modes/simplest_monte_carlo"
+require_relative "engine/modes/geometric_monte_carlo"
 
 module Integral
   class Calculator
