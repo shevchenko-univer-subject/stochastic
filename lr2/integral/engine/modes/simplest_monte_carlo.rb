@@ -4,7 +4,7 @@ module Integral
 
       def compute_function(axis)
         sum = @quantity.times.map do
-          @functions[axis].call(rand(@borders[axis]))
+          @functions[axis].call(rand(@borders[axis]), @params[axis])
         end.reduce(:+)
         amplitude(@borders[axis]).to_f * sum.to_f / @quantity.to_f
       end
@@ -21,7 +21,7 @@ module Integral
         def dispersion(axis)
           sum = {smpl: 0, pow2: 0}
           @quantity.times do
-            f = @functions[axis].call(rand(@borders[axis]))
+            f = @functions[axis].call(rand(@borders[axis]), @params[axis])
             sum[:smpl] += f
             sum[:pow2] += f ** 2
           end

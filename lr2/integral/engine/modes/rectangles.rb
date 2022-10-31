@@ -4,7 +4,7 @@ module Integral
 
       def compute_function(axis, quantity: nil)
         sum = @borders[axis].step(quantity || @quantity).map do |var|
-          @functions[axis].call(var)
+          @functions[axis].call(var, @params[axis])
         end.reduce(:+)
         sum * @quantity
       end

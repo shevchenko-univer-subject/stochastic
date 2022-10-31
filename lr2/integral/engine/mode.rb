@@ -13,11 +13,13 @@ module Integral
         new(*args).compute
       end
 
-      def initialize(borders, functions, quantity)
-        @functions = functions
-        @borders = borders
+      def initialize(functions_data, quantity)
+        @functions = functions_data[:functions]
+        @params =    functions_data[:params]
+        @borders =   functions_data[:borders]
+
         @quantity = quantity
-        
+
         @volume = nil
         @mistake = nil
       end
@@ -25,6 +27,7 @@ module Integral
       def compute
         compute_volume
         compute_mistake
+        true
       end
 
       def compute_volume

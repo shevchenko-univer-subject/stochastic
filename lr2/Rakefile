@@ -3,9 +3,12 @@ require 'pp'
 require_relative 'integral/calculator'
 
 task :run do
-
-  collected_functions = collect_functions
-  collected_borders   = collect_borders
+  
+  collected_functions_data = {
+    functions: collect_functions,
+    borders:   collect_borders,
+    params:    collect_params
+  }
 
   step     = 0.0001
   quantity = 100_000
@@ -17,9 +20,9 @@ task :run do
     \t f(y) = Math.exp(-m_param * y) 
     \t f(z) = Math.sin(Math::PI * k_param * z) 
     Borders:
-    \t for x = #{collected_borders[:x]}
-    \t for y = #{collected_borders[:y]}
-    \t for x = #{collected_borders[:z]}
+    \t for x = #{collected_functions_data.dig(:borders, :x)}
+    \t for y = #{collected_functions_data.dig(:borders, :y)}
+    \t for x = #{collected_functions_data.dig(:borders, :z)}
     Quantity: \t\t\t\t#{quantity}
     Step (for rectangles method only): \t#{step}
     ==============/DATA ==============
@@ -27,30 +30,30 @@ task :run do
 
   integrator = Integral::Calculator.new()
 
-  integrator.engine = Integral::Engine::Direct.new(collected_borders, collected_functions, quantity)
+  integrator.engine = Integral::Engine::Direct.new(collected_functions_data, quantity)
   direct = integrator.result
 
-  integrator.engine = Integral::Engine::Rectangles.new(collected_borders, collected_functions, step)
+  integrator.engine = Integral::Engine::Rectangles.new(collected_functions_data, step)
   rectangles = integrator.result
   rectangles_diff_direct = volume_diff_between(rectangles, direct)
 
-  integrator.engine = Integral::Engine::SimplestMonteCarlo.new(collected_borders, collected_functions, quantity)
+  integrator.engine = Integral::Engine::SimplestMonteCarlo.new(collected_functions_data, quantity)
   simplest_mc = integrator.result
   simplest_diff_direct = volume_diff_between(simplest_mc, direct)
 
-  integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_borders, collected_functions, quantity)
+  integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_functions_data, quantity)
   geometric_mc = integrator.result
   geometric_diff_direct = volume_diff_between(geometric_mc, direct)
 
   puts <<-OUTPUT
     ============= RESULT =============
     Direct: 
-      volume:  #{direct[:volume]}
-      mistake: #{direct[:mistake]}
+      volume:   \t\t#{direct[:volume]}
+      mistake:  \t\t#{direct[:mistake]}
     Rectangles:
       volume:   \t\t#{rectangles[:volume]}
       mistake:  \t\t#{rectangles[:mistake]}
-      quantity: \t\t#{rectangles[:quantity]}
+      step: \t\t\t#{rectangles[:quantity]}
       differend to direct: \t#{rectangles_diff_direct}
     The Simplest Monte Carlo:
       volume:   \t\t#{simplest_mc[:volume]}
@@ -72,17 +75,23 @@ def volume_diff_between(this, other)
 end
 
 def collect_functions
-  a_param = m_param = k_param = 1.0
-
-  func_x = ->(x) { a_param.to_f * (1.0 - x.to_f) * x.to_f }
-  func_y = ->(y) { Math.exp(-m_param.to_f * y.to_f) }
-  func_z = ->(z) { Math.sin(Math::PI * k_param.to_f * z.to_f) }
+  func_x = ->(x, params) { params[:a].to_f * (1.0 - x.to_f) * x.to_f }
+  func_y = ->(y, params) { Math.exp(-params[:m].to_f * y.to_f) }
+  func_z = ->(z, params) { Math.sin(Math::PI * params[:k].to_f * z.to_f) }
 
   {
     x: func_x,
     y: func_y,
     z: func_z 
   }
+end
+
+def collect_params
+  {
+    x: { a: 1.0 },
+    y: { m: 1.0 },
+    z: { k: 1.0 }
+  }  
 end
 
 def collect_borders

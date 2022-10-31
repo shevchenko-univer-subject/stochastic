@@ -4,7 +4,7 @@ module Integral
       WITHOUT_MISTAKE = 0
 
       def initialize(*args)
-        args[2] = nil
+        args.first[:quantity] = nil
         super(*args)
       end
 

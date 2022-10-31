@@ -5,7 +5,7 @@ module Integral
       def compute_function(axis)
       # prepare
         abscissa_borders = @borders[axis]
-        ordinate_borders = find_ordinate_borders(abscissa_borders, @functions[axis])
+        ordinate_borders = find_ordinate_borders_for(axis)
 
         amplitude_abscissa_borders = amplitude(abscissa_borders)
         amplitude_ordinate_borders = amplitude(ordinate_borders)
@@ -15,7 +15,7 @@ module Integral
           abscissa = abscissa_borders.min + amplitude_abscissa_borders * rand(abscissa_borders)
           ordinate = ordinate_borders.min + amplitude_ordinate_borders * rand(abscissa_borders)
 
-          @functions[axis].call(abscissa) > ordinate
+          @functions[axis].call(abscissa, @params[axis]) > ordinate
         end.count
 
       # result
@@ -27,7 +27,7 @@ module Integral
 
       def compute_mistake
         raw_mistake = AXISES.map do |axis|
-          ordinate_borders = find_ordinate_borders(@borders[axis], @functions[axis])
+          ordinate_borders = find_ordinate_borders_for(axis)
           amplitude(@borders[axis]) * 
             amplitude(ordinate_borders) * 
             Math.sqrt(dispersion(axis) / @quantity)
@@ -36,24 +36,29 @@ module Integral
       end
 
       private
-        def find_verge(verge, borders, func)
-          wanted = func.call(borders.max)
+        def find_verge(verge, axis)
+          func =    @functions[axis]
+          borders = @borders[axis]
+          params =  @params[axis]
+
+          wanted = func.call(borders.max, params)
           @quantity.times do |val|
-            f = func.call(amplitude(borders) / @quantity * val)
+            val = amplitude(borders) / @quantity * val
+            f = func.call(val, params)
             wanted = f if f.method(verge).call(wanted)
           end 
           wanted
         end
 
-        def find_ordinate_borders(borders, function)
-          min = find_verge(:<, borders, function)
-          max = find_verge(:>, borders, function)
+        def find_ordinate_borders_for(axis)
+          min = find_verge(:<, axis)
+          max = find_verge(:>, axis)
           min..max
         end
       
         def dispersion(axis)
             sum = @quantity.times.select do
-              @functions[axis].call(rand(@borders[axis])) > rand(@borders[axis])
+              @functions[axis].call(rand(@borders[axis]), @params[axis]) > rand(@borders[axis])
             end.count
 
             (1.0 - sum.to_f / @quantity) * sum.to_f / @quantity
