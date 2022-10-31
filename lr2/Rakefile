@@ -16,13 +16,17 @@ task :run do
   puts <<-OUTPUT
     ============== DATA ==============
     Functions:
-    \t f(x) = a_param * (1.0 - x) * x 
-    \t f(y) = Math.exp(-m_param * y) 
-    \t f(z) = Math.sin(Math::PI * k_param * z) 
+    \t f(x) = a * (1.0 - x) * x 
+    \t f(y) = Math.exp(-m * y) 
+    \t f(z) = Math.sin(Math::PI * k * z) 
+    Params:
+    \t for f(x) - a = #{collected_functions_data.dig(:params, :x, :a)}
+    \t for f(y) - m = #{collected_functions_data.dig(:params, :y, :m)}
+    \t for f(z) - k = #{collected_functions_data.dig(:params, :z, :k)}
     Borders:
-    \t for x = #{collected_functions_data.dig(:borders, :x)}
-    \t for y = #{collected_functions_data.dig(:borders, :y)}
-    \t for x = #{collected_functions_data.dig(:borders, :z)}
+    \t for f(x) - #{collected_functions_data.dig(:borders, :x)}
+    \t for f(y) - #{collected_functions_data.dig(:borders, :y)}
+    \t for f(x) - #{collected_functions_data.dig(:borders, :z)}
     Quantity: \t\t\t\t#{quantity}
     Step (for rectangles method only): \t#{step}
     ==============/DATA ==============
@@ -88,7 +92,7 @@ end
 
 def collect_params
   {
-    x: { a: 1.0 },
+    x: { a: 2.0 },
     y: { m: 1.0 },
     z: { k: 1.0 }
   }  
