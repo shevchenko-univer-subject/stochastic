@@ -1,9 +1,12 @@
 require 'benchmark'
 
 require_relative 'integral/calculator'
+require_relative 'tools/console_manager'
 
 task :run do
-  
+
+  print_current_functions
+
   collected_functions_data = {
     functions: collect_functions,
     borders:   collect_borders,
@@ -13,7 +16,7 @@ task :run do
   step     = 0.0001
   quantity = 100_000
 
-  puts <<-OUTPUT
+  Tools::ConsoleManager.output <<-OUTPUT
     ============== DATA ==============
     Functions:
     \t f(x) = a * (1.0 - x) * x 
@@ -53,7 +56,7 @@ task :run do
   geometric_mc_benchmark = Benchmark.measure{ geometric_mc = integrator.result }
   geometric_diff_direct = volume_diff_between(geometric_mc, direct)
 
-  puts <<-OUTPUT
+  Tools::ConsoleManager.output <<-OUTPUT
     ============= RESULT =============
     Direct: 
       volume:   \t\t#{direct[:volume]}
@@ -79,7 +82,6 @@ task :run do
       benchmark: \t\t#{geometric_mc_benchmark}
     =============/RESULT =============
   OUTPUT
-
 end
 
 def volume_diff_between(this, other)
@@ -99,23 +101,33 @@ def collect_functions
 end
 
 def collect_params
+  Tools::ConsoleManager.output "Set parameters for functions:"
   {
-    x: { a: 2.0 },
-    y: { m: 1.0 },
-    z: { k: 1.0 }
+    x: { a: Tools::ConsoleManager.input_f("\tf(x) - a = ") },
+    y: { m: Tools::ConsoleManager.input_f("\tf(y) - m = ") },
+    z: { k: Tools::ConsoleManager.input_f("\tf(z) - k = ") }
   }  
 end
 
 def collect_borders
+  Tools::ConsoleManager.output "Set rigth border for funtions:"
   border_right = {
-    x: 1,
-    y: 1,
-    z: 1
+    x: Tools::ConsoleManager.input_f("\tmax(x) - "),
+    y: Tools::ConsoleManager.input_f("\tmax(y) - "),
+    z: Tools::ConsoleManager.input_f("\tmax(z) - ")
   }
 
   {
-    x: Range.new(0, border_right[:x].to_f),
-    y: Range.new(0, border_right[:y].to_f),
-    z: Range.new(0, border_right[:z].to_f)
+    x: Range.new(0, border_right[:x]),
+    y: Range.new(0, border_right[:y]),
+    z: Range.new(0, border_right[:z])
   }
+end
+
+def print_current_functions
+  Tools::ConsoleManager.output <<-OUTPUT 
+    \tf(x) = a * (1.0 - x) * x 
+    \tf(y) = Math.exp(-m * y) 
+    \tf(z) = Math.sin(Math::PI * k * z) 
+  OUTPUT
 end
