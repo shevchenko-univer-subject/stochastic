@@ -53,7 +53,7 @@ task :run do
 
   integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_functions_data, quantity)
   geometric_mc = nil
-  geometric_mc_benchmark = Benchmark.measure{ geometric_mc = integrator.result }
+  geometric_mc_benchmark = Benchmark.measure { geometric_mc = integrator.result }
   geometric_diff_direct = volume_diff_between(geometric_mc, direct)
 
   Tools::ConsoleManager.output <<-OUTPUT
@@ -61,25 +61,27 @@ task :run do
     Direct: 
       volume:   \t\t#{direct[:volume]}
       mistake:  \t\t#{direct[:mistake]}
-      benchmark: \t\t#{direct_benchmark}
     Rectangles:
       volume:   \t\t#{rectangles[:volume]}
       mistake:  \t\t#{rectangles[:mistake]}
       step: \t\t\t#{rectangles[:quantity]}
       differend to direct: \t#{rectangles_diff_direct}
-      benchmark: \t\t#{rectangles_benchmark}
     The Simplest Monte Carlo:
       volume:   \t\t#{simplest_mc[:volume]}
       mistake:  \t\t#{simplest_mc[:mistake]}
       quantity: \t\t#{simplest_mc[:quantity]}
       differend to direct: \t#{simplest_diff_direct}
-      benchmark: \t\t#{simplest_mc_benchmark}
     The Geometric Monte Carlo:
       volume:   \t\t#{geometric_mc[:volume]}
       mistake:  \t\t#{geometric_mc[:mistake]}
       quantity: \t\t#{geometric_mc[:quantity]}
       differend to direct: \t#{geometric_diff_direct}
-      benchmark: \t\t#{geometric_mc_benchmark}
+    Benchmarks:
+      \t\t\t\t\t  user\t     system\ttotal\t  real
+      Direct:     \t\t\t#{direct_benchmark}
+      Rectangles: \t\t\t#{rectangles_benchmark}
+      The Simplest Monte Carlo:: \t#{simplest_mc_benchmark}
+      The Geometric Monte Carlo: \t#{geometric_mc_benchmark}
     =============/RESULT =============
   OUTPUT
 end
