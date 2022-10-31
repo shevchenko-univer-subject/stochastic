@@ -1,4 +1,4 @@
-require 'pp'
+require 'benchmark'
 
 require_relative 'integral/calculator'
 
@@ -35,18 +35,22 @@ task :run do
   integrator = Integral::Calculator.new()
 
   integrator.engine = Integral::Engine::Direct.new(collected_functions_data, quantity)
-  direct = integrator.result
+  direct = nil
+  direct_benchmark = Benchmark.measure { direct = integrator.result }
 
   integrator.engine = Integral::Engine::Rectangles.new(collected_functions_data, step)
-  rectangles = integrator.result
+  rectangles = nil
+  rectangles_benchmark = Benchmark.measure { rectangles = integrator.result }
   rectangles_diff_direct = volume_diff_between(rectangles, direct)
 
   integrator.engine = Integral::Engine::SimplestMonteCarlo.new(collected_functions_data, quantity)
-  simplest_mc = integrator.result
+  simplest_mc = nil
+  simplest_mc_benchmark = Benchmark.measure { simplest_mc = integrator.result }
   simplest_diff_direct = volume_diff_between(simplest_mc, direct)
 
   integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_functions_data, quantity)
-  geometric_mc = integrator.result
+  geometric_mc = nil
+  geometric_mc_benchmark = Benchmark.measure{ geometric_mc = integrator.result }
   geometric_diff_direct = volume_diff_between(geometric_mc, direct)
 
   puts <<-OUTPUT
@@ -54,21 +58,25 @@ task :run do
     Direct: 
       volume:   \t\t#{direct[:volume]}
       mistake:  \t\t#{direct[:mistake]}
+      benchmark: \t\t#{direct_benchmark}
     Rectangles:
       volume:   \t\t#{rectangles[:volume]}
       mistake:  \t\t#{rectangles[:mistake]}
       step: \t\t\t#{rectangles[:quantity]}
       differend to direct: \t#{rectangles_diff_direct}
+      benchmark: \t\t#{rectangles_benchmark}
     The Simplest Monte Carlo:
       volume:   \t\t#{simplest_mc[:volume]}
       mistake:  \t\t#{simplest_mc[:mistake]}
       quantity: \t\t#{simplest_mc[:quantity]}
       differend to direct: \t#{simplest_diff_direct}
+      benchmark: \t\t#{simplest_mc_benchmark}
     The Geometric Monte Carlo:
       volume:   \t\t#{geometric_mc[:volume]}
       mistake:  \t\t#{geometric_mc[:mistake]}
       quantity: \t\t#{geometric_mc[:quantity]}
       differend to direct: \t#{geometric_diff_direct}
+      benchmark: \t\t#{geometric_mc_benchmark}
     =============/RESULT =============
   OUTPUT
 
