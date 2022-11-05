@@ -54,12 +54,15 @@ module ManagedSimulator
 
         def set_probability_take_about_positions(raw_probability)
           @probability = {
-            north:                                @meta.dig(:start_position, :y) /@meta.dig(:space_size, :y).to_f,
-            south:  (@meta.dig(:space_size, :y) - @meta.dig(:start_position, :y))/@meta.dig(:space_size, :y).to_f,
-            east:                                 @meta.dig(:start_position, :x) /@meta.dig(:space_size, :x).to_f,
-            west:   (@meta.dig(:space_size, :x) - @meta.dig(:start_position, :x))/@meta.dig(:space_size, :x).to_f
+            north:  north_probability,
+            south:  south_probability,
+            east:   east_probability,
+            west:   west_probability
           }
           @probability.keys.each do |side|
+            if @probability[side].zero?
+              next @probability[side] = raw_probability[side] ** distance_to_opposite(side)
+            end
             @probability[side] *= raw_probability[side]
           end
 
@@ -73,6 +76,30 @@ module ManagedSimulator
           @probability.keys.each do |kase|
             @probability[kase] *= nomalization_koef
           end
+        end
+
+        def distance_to_opposite(side)
+          if side == :north || side == :south
+            @meta.dig(:space_size, :y)
+          elsif side == :east || side == :west
+            @meta.dig(:space_size, :x)
+          end
+        end
+
+        def north_probability
+          @meta.dig(:start_position, :y) / @meta.dig(:space_size, :y).to_f
+        end
+
+        def south_probability
+          (@meta.dig(:space_size, :y) - @meta.dig(:start_position, :y)) / @meta.dig(:space_size, :y).to_f
+        end
+
+        def east_probability
+          @meta.dig(:start_position, :x) / @meta.dig(:space_size, :x).to_f
+        end
+
+        def west_probability
+          (@meta.dig(:space_size, :x) - @meta.dig(:start_position, :x)) / @meta.dig(:space_size, :x).to_f
         end
     end
   end

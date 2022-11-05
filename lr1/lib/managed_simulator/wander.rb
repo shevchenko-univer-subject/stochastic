@@ -1,7 +1,7 @@
 module ManagedSimulator
   require_relative 'wander/experiment'
   require_relative 'wander/statistic'
-
+  COUNT_SIDES = 4
   def run  
     puts 'Hi. Lets model a point random wandering'
 
@@ -29,10 +29,13 @@ module ManagedSimulator
   private
     def print_statistic_info(statistic)
       puts 'Info: '
-      statistic.data.keys.each do |el|
-        puts "\t #{el.capitalize}: "
-        puts "\t\t Exit probability #{statistic.data[el][:exit_prob]}"
-        puts "\t\t Uncertaity #{statistic.data[el][:uncertainty]}"
+      statistic.data.keys.each do |kase|
+        puts "\t #{kase.capitalize}: "
+        puts "\t\t Exit probability #{statistic.data[kase][:exit_prob]}"
+        puts "\t\t Uncertaity       #{statistic.data[kase][:uncertainty]}"
+        puts "\t\t Delta            #{statistic.data[kase][:delta]}"
+        puts "\t\t Border           #{statistic.data[kase][:border]}"
+        puts "\t Results of simulation is #{statistic.data[kase][:delta] <= statistic.data[kase][:border] ? 'great :)' : 'bad :('}"
       end
     end
 

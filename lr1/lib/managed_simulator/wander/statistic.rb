@@ -30,7 +30,9 @@ module ManagedSimulator
           {
             "#{kase}": {
               exit_prob:   calculate_exit_probability(kase),
-              uncertainty: calculate_uncertainty(kase)
+              uncertainty: calculate_uncertainty(kase),
+              delta: calculate_delta(kase),
+              border: calculate_border(kase)
             }
           }
         end
@@ -40,8 +42,16 @@ module ManagedSimulator
         end
 
         def calculate_uncertainty(kase)
-          exit_prob = calculate_exit_probability kase
+          exit_prob = calculate_exit_probability(kase)
           Math.sqrt( exit_prob*(1-exit_prob) / @meta[:sample_size] )
+        end
+
+        def calculate_delta(kase)
+          (@probability[kase] - calculate_exit_probability(kase)).abs
+        end
+
+        def calculate_border(kase)
+          calculate_uncertainty(kase) * 3
         end
     end
   end
