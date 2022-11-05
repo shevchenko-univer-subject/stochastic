@@ -8,7 +8,9 @@ module Tools
     end
 
     def input_f str
-      input(str).to_f
+      input_data = input(str).to_f
+      return nil if input_data.zero?
+      input_data
     end
 
     def output str

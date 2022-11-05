@@ -13,8 +13,8 @@ task :run do
     params:    collect_params
   }
 
-  step     = 0.0001
-  quantity = 100_000
+  step     = set_step
+  quantity = set_quantity
 
   Tools::ConsoleManager.output <<-OUTPUT
     ============== DATA ==============
@@ -59,31 +59,134 @@ task :run do
   Tools::ConsoleManager.output <<-OUTPUT
     ============= RESULT =============
     Direct: 
-      volume:   \t\t#{direct[:volume]}
-      mistake:  \t\t#{direct[:mistake]}
+      volume:              \t#{direct[:volume]}
+      mistake:             \t#{direct[:mistake]}
     Rectangles:
-      volume:   \t\t#{rectangles[:volume]}
-      mistake:  \t\t#{rectangles[:mistake]}
-      step: \t\t\t#{rectangles[:quantity]}
+      volume:              \t#{rectangles[:volume]}
+      mistake:             \t#{rectangles[:mistake]}
+      step:                \t#{rectangles[:quantity]}
       differend to direct: \t#{rectangles_diff_direct}
     The Simplest Monte Carlo:
-      volume:   \t\t#{simplest_mc[:volume]}
-      mistake:  \t\t#{simplest_mc[:mistake]}
-      quantity: \t\t#{simplest_mc[:quantity]}
+      volume:              \t#{simplest_mc[:volume]}
+      mistake:             \t#{simplest_mc[:mistake]}
+      quantity:            \t#{simplest_mc[:quantity]}
       differend to direct: \t#{simplest_diff_direct}
     The Geometric Monte Carlo:
-      volume:   \t\t#{geometric_mc[:volume]}
-      mistake:  \t\t#{geometric_mc[:mistake]}
-      quantity: \t\t#{geometric_mc[:quantity]}
+      volume:              \t#{geometric_mc[:volume]}
+      mistake:             \t#{geometric_mc[:mistake]}
+      quantity:            \t#{geometric_mc[:quantity]}
       differend to direct: \t#{geometric_diff_direct}
     Benchmarks:
-      \t\t\t\t\t  user\t     system\ttotal\t  real
-      Direct:     \t\t\t#{direct_benchmark}
-      Rectangles: \t\t\t#{rectangles_benchmark}
-      The Simplest Monte Carlo:: \t#{simplest_mc_benchmark}
-      The Geometric Monte Carlo: \t#{geometric_mc_benchmark}
+                                 \t  user\t     system\ttotal\t  real
+      Direct:                    \t#{direct_benchmark.to_s.chomp}
+      Rectangles:                \t#{rectangles_benchmark.to_s.chomp}
+      The Simplest Monte Carlo:  \t#{simplest_mc_benchmark.to_s.chomp}
+      The Geometric Monte Carlo: \t#{geometric_mc_benchmark.to_s.chomp}
     =============/RESULT =============
   OUTPUT
+end
+
+
+task :test do 
+
+  collected_functions_data = {
+    functions:  {
+      x: ->(x, params) { params[:a].to_f * (1.0 - x.to_f) * x.to_f },
+      y: ->(y, params) { Math.exp(-params[:m].to_f * y.to_f) },
+      z: ->(z, params) { Math.sin(Math::PI * params[:k].to_f * z.to_f) } 
+    },
+    borders:   {
+      x: Range.new(0, 1.0),
+      y: Range.new(0, 1.0),
+      z: Range.new(0, 1.0)
+    },
+    params: {
+      x: { a: 1.0 },
+      y: { m: 1.0 },
+      z: { k: 1.0 }
+    }  
+  }
+
+  step =     [0.01, 0.000_1, 0.000_01]
+  quantity = [ 100,  10_000,  100_000]
+
+  Tools::ConsoleManager.output <<-OUTPUT
+    ============== DATA ==============
+    Functions:
+    \t f(x) = a * (1.0 - x) * x 
+    \t f(y) = Math.exp(-m * y) 
+    \t f(z) = Math.sin(Math::PI * k * z) 
+    Params:
+    \t for f(x) - a = #{collected_functions_data.dig(:params, :x, :a)}
+    \t for f(y) - m = #{collected_functions_data.dig(:params, :y, :m)}
+    \t for f(z) - k = #{collected_functions_data.dig(:params, :z, :k)}
+    Borders:
+    \t for f(x) - #{collected_functions_data.dig(:borders, :x)}
+    \t for f(y) - #{collected_functions_data.dig(:borders, :y)}
+    \t for f(x) - #{collected_functions_data.dig(:borders, :z)}
+    Quantity:                          \t#{quantity}
+    Step (for rectangles method only): \t#{step}
+    ==============/DATA ==============
+  OUTPUT
+  integrator = Integral::Calculator.new()
+
+  integrator.engine = Integral::Engine::Direct.new(collected_functions_data, quantity)
+  direct = integrator.result 
+
+  mistakes_rectangles = step.map do |st|
+    integrator.engine = Integral::Engine::Rectangles.new(collected_functions_data, st)
+    volume_diff_between(direct, integrator.result)
+  end 
+
+  times = 4
+  mistakes_simplest_mc = quantity.map do |q|
+    times.times.map do 
+      integrator.engine = Integral::Engine::SimplestMonteCarlo.new(collected_functions_data, q)
+      integrator.procces
+      volume_diff_between(direct, integrator.result)
+    end.reduce(:+) / times
+  end 
+
+  mistakes_geometric_mc = quantity.map do |q|
+    times.times.map do 
+      integrator.engine = Integral::Engine::GeometricMonteCarlo.new(collected_functions_data, q)
+      integrator.procces
+      volume_diff_between(direct, integrator.result)
+    end.reduce(:+) / times
+  end 
+
+  is_right_rectangles_result   = compare_mistakes(mistakes_rectangles)
+  is_right_simplest_mc_result  = compare_mistakes(mistakes_simplest_mc)
+  is_right_geometric_mc_result = compare_mistakes(mistakes_geometric_mc)
+
+  Tools::ConsoleManager.output <<-OUTPUT
+    ============== TEST ==============
+    Rectangles:
+      mistakes:
+        #{step[0]} \t-> #{mistakes_rectangles[0]}
+        #{step[1]} \t-> #{mistakes_rectangles[1]}
+        #{step[2]} -> #{mistakes_rectangles[2]}
+      Calculation is #{is_right_rectangles_result ? 'great :)' : 'bad :('}
+    The Simplest Monte Carlo - each repeated #{times} times:
+      mistakes:
+        #{quantity[0]} \t-> #{mistakes_simplest_mc[0]}
+        #{quantity[1]} \t-> #{mistakes_simplest_mc[1]}
+        #{quantity[2]} \t-> #{mistakes_simplest_mc[2]}
+
+      Calculation is #{is_right_simplest_mc_result ? 'great :)' : 'bad :('}
+    The Geometric Monte Carlo - each repeated #{times} times:
+      mistakes:
+        #{quantity[0]} \t-> #{mistakes_geometric_mc[0]}
+        #{quantity[1]} \t-> #{mistakes_geometric_mc[1]}
+        #{quantity[2]} \t-> #{mistakes_geometric_mc[2]}
+      Calculation is #{is_right_geometric_mc_result ? 'great :)' : 'bad :('}
+    ==============/TEST ==============
+  OUTPUT
+
+end
+
+def compare_mistakes(mistakes)
+  mistakes[0] > mistakes[1] && mistakes[1] > mistakes[2]
 end
 
 def volume_diff_between(this, other)
@@ -103,20 +206,20 @@ def collect_functions
 end
 
 def collect_params
-  Tools::ConsoleManager.output "Set parameters for functions:"
+  Tools::ConsoleManager.output "Set parameters for functions <default: 1.0>:"
   {
-    x: { a: Tools::ConsoleManager.input_f("\tf(x) - a = ") },
-    y: { m: Tools::ConsoleManager.input_f("\tf(y) - m = ") },
-    z: { k: Tools::ConsoleManager.input_f("\tf(z) - k = ") }
+    x: { a: Tools::ConsoleManager.input_f("\tf(x) - a = ") || 1.0},
+    y: { m: Tools::ConsoleManager.input_f("\tf(y) - m = ") || 1.0},
+    z: { k: Tools::ConsoleManager.input_f("\tf(z) - k = ") || 1.0}
   }  
 end
 
 def collect_borders
-  Tools::ConsoleManager.output "Set rigth border for funtions:"
+  Tools::ConsoleManager.output "Set rigth border for funtions  <default: 1.0>:"
   border_right = {
-    x: Tools::ConsoleManager.input_f("\tmax(x) - "),
-    y: Tools::ConsoleManager.input_f("\tmax(y) - "),
-    z: Tools::ConsoleManager.input_f("\tmax(z) - ")
+    x: Tools::ConsoleManager.input_f("\tmax(x) - ") || 1.0,
+    y: Tools::ConsoleManager.input_f("\tmax(y) - ") || 1.0,
+    z: Tools::ConsoleManager.input_f("\tmax(z) - ") || 1.0
   }
 
   {
@@ -132,4 +235,14 @@ def print_current_functions
     \tf(y) = Math.exp(-m * y) 
     \tf(z) = Math.sin(Math::PI * k * z) 
   OUTPUT
+end
+
+def set_step
+  Tools::ConsoleManager.output "Set step for rectangles integration (the less the better) <default: 0.0001>:"
+  Tools::ConsoleManager.input_f("\tstep - ") || 0.0001
+end
+
+def set_quantity
+  Tools::ConsoleManager.output "Set quantityfor Monte Carlo integration (the bigger the better) <default: 10_000>:"
+  Tools::ConsoleManager.input_f("\tquantity- ") || 10_000  
 end
