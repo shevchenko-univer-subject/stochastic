@@ -1,112 +1,76 @@
 # frozen_string_literal: true
 
 require_relative 'lib/particle_passage_simulation/experiment'
-require_relative 'lib/particle_passage_simulation/statistic'
 require_relative 'lib/tools/console_manager'
 
 task :run do
-  puts 'Hi. Lets model a point random wandering'
+  collected_data = collect_data
 
-  print 'Do you want set custom probability values?(y,n) '
+  Tools::ConsoleManager.output <<-OUTPUT
+    ============== DATA ==============
+    Quantity: \t\t\t\t#{quantity}
 
-  data = if $stdin.gets.chomp == 'y'
-           get_data_from_term_form
-         else
-           default_data
-         end
+    Characteristics of radiation and the layer of substance:
+    \t substance thickness:      #{collect_data.dig(:meta, :h)}
+    \t coocrdinate:              #{collect_data.dig(:meta, :x_0)}
+    \t radiation angle in grade: #{collect_data.dig(:meta, :teta_0)}
 
-  print_data(data)
+    Characteristics of the process of interaction of particles with substance:
+    \t mean free run length:            #{collect_data.dig(:character, :l)}
+    \t particle absorption probability: #{collect_data.dig(:character, :p_a)}
+    \t scattering indicator:            #{collect_data.dig(:character, :n)}
+    \t average scattering angle:        #{collect_data.dig(:character, :omega_av)}
+    ==============/DATA ==============
+  OUTPUT
 
-  puts "\n"
   puts 'Running...'
-  experiment = ParticlePassageSimulation::Experiment.call(data)
+  experiment = ParticlePassageSimulation::Experiment.call(collected_data)
 
   puts 'Process...'
-  statistic = ParticlePassageSimulation::Statistic.call(experiment.collected_data)
-  puts "\n"
-
-  print_statistic_info(statistic)
+  statistic = experiment.statistic
 end
 
-def print_statistic_info(statistic)
-  puts 'Info: '
-  statistic.data.each_key do |kase|
-    puts "\t #{kase.capitalize}: "
-    puts "\t\t Exit probability #{statistic.data[kase][:exit_prob]}"
-    puts "\t\t Uncertaity       #{statistic.data[kase][:uncertainty]}"
-    puts "\t\t Delta            #{statistic.data[kase][:delta]}"
-    puts "\t\t Border           #{statistic.data[kase][:border]}"
-    puts "\t Results of simulation is #{statistic.data[kase][:delta] <= statistic.data[kase][:border] ? 'great :)' : 'bad :('}"
-  end
-end
-
-def print_data(data)
-  puts "\n"
-  puts "Monte-Carlo sample size is #{data[:meta][:sample_size]}"
-  puts "Probability values is #{data[:probability].inspect}"
-  puts "Start position is #{data[:meta][:start_position]}"
-end
-
-def default_data
+def collect_data
+  # {
+  #   quantity -- розмір вибірки для статичної оцінки результатів
+  #   meta{
+  #     h        -- товщина шару
+  #     x_0      -- координата поверхні шару що опромінюється
+  #     teta_0   -- кут падіння випромінювання на поверхню шару
+  #   }
+  #   character {
+  #     l        -- середня довжина вільного пробігу частинок у речовені шару
+  #     p_a      -- ймовірність поглинання частинок при взаємодії з речовеною
+  #     n        -- модельний параметер індикатриси розсіювання
+  #     omega_av -- середніц кут розсіювання частинок при взаємодії з речовиною
+  #   }
+  # }
   {
-    meta: {
-      sample_size: 10_000,
-      space_size: {
-        x: 10,
-        y: 10
-      },
-      start_position: {
-        x: 5,
-        y: 5
-      }
-    },
-    probability: {
-      north: 0.25,
-      south: 0.25,
-      east: 0.25,
-      west: 0.25,
-      stopped: 0
-    }
+    quantity:  collect_quantitny,
+    meta:      collect_meta,
+    character: collect_character
   }
 end
 
-def get_data_from_term_form
-  empty_data = {
-    meta: {
-      sample_size: nil,
-      space_size: nil,
-      start_position: nil
-    },
-    probability: {
-      north: nil,
-      south: nil,
-      east: nil,
-      west: nil,
-      stopped: nil
-    }
+def collect_quantitny
+  Tools::ConsoleManager.input_i("Set sample size <default: 10_000> = ") || 10_000
+end
+
+def collect_meta
+  Tools::ConsoleManager.output "Set characteristics of radiation and the layer of substance:"
+  {
+    h:      Tools::ConsoleManager.input_f("\t substance thickness        <default: 2> = ") || 2.0,
+    x_0:    Tools::ConsoleManager.input_f("\t coocrdinate                <default: 0> = ") || 0.0,
+    teta_0: Tools::ConsoleManager.input_f("\t cos of radiation angle     <default: 1> = ") || 1.0
   }
+end
 
-  print 'Monte-Carlo sample size is '
-  empty_data[:meta].merge!(sample_size: $stdin.gets.chomp.to_i)
-
-  puts 'Space size is'
-  print "\tx = "
-  x = $stdin.gets.chomp.to_i
-  print "\ty = "
-  y = $stdin.gets.chomp.to_i
-  empty_data[:meta].merge!(space_size: { x: x, y: y })
-
-  puts 'Start position is'
-  print "\tx = "
-  x = $stdin.gets.chomp.to_i
-  print "\ty = "
-  y = $stdin.gets.chomp.to_i
-  empty_data[:meta].merge!(start_position: { x: x, y: y })
-
-  %i[north south east west stopped].each do |el|
-    print "probability #{el}\t= "
-    value = $stdin.gets.chomp.to_f
-    empty_data[:probability].merge!({ "#{el}": value })
-  end
-  empty_data
+def collect_character
+  Tools::ConsoleManager.output "Set characteristics of the process of interaction of particles with substance:"
+  {
+    l:       Tools::ConsoleManager.input_f("\t mean free run length              <default: 1>     = ") || 1.0, # аналогічно 74
+    p_a:      Tools::ConsoleManager.input_f("\t particle absorption probability   <default: 0.001> = ") || 0.001,
+    n:        Tools::ConsoleManager.input_f("\t scattering indicator              <default: 1>     = ") || 0.1
+    omega_av: Tools::ConsoleManager.input_f("\t cos ofaverage scattering angle    <default: 0>     = ") || 0.0 # проблеми з розумінням Ж мабуть потрібно відносно середнього значення рандомізувати відхилення
+  }
 end

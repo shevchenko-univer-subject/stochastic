@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'statistic'
+
 module ParticlePassageSimulation
   class Experiment
     def self.call(*args)
@@ -32,6 +34,10 @@ module ParticlePassageSimulation
         probability: @probability,
         result: @result
       }
+    end
+
+    def statistic
+      @statistic ||= Statistic.new(collected_data)
     end
 
     private
