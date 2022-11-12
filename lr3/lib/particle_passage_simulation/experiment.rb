@@ -4,111 +4,92 @@ require_relative 'statistic'
 
 module ParticlePassageSimulation
   class Experiment
+    attr_reader :statistic
+    NORMAL_DISTRTIBUTION = []
     def self.call(*args)
       new(*args).call
     end
 
     def initialize(data)
+      @quantity = data[:quantity]
       @meta = data[:meta]
-      set_probability_take_about_positions(data[:probability])
+      @character = data[:character]
 
-      @result = {
-        stopped: 0,
-        north: 0,
-        south: 0,
-        east: 0,
-        west: 0
+      @statistic = {
+        back: 0,
+        forward: 0,
+        absorption: 0
       }
     end
 
     def call
-      sample_size.times do
-        record_result(random_situation)
-      end
-      self
-    end
+      @quantity.times do |n|
+        p n
+        loop do
+          current_position = @meta[:coocrdinate]
+          current_cos_angle = @meta[:cos_radiation_angle]
 
-    def collected_data
-      {
-        meta: @meta,
-        probability: @probability,
-        result: @result
-      }
-    end
+          current_position =+ calculate_offset(current_cos_angle) 
+          
+          break record_run_back    if run_back?(current_position)
+          break record_run_forward if run_forward?(current_position)
+          break record_absorption  if absorption?(current_position)
 
-    def statistic
-      @statistic ||= Statistic.new(collected_data)
-    end
-
-    private
-
-    def random_situation
-      rand_v = Random.rand(@probability.values.sum)
-      from = 0
-      to = 0
-
-      @probability.each do |kase, prob|
-        from = to
-        to += prob
-        return kase if rand_v.between?(from, to)
+          current_cos_angle = calculate_new_cos_angle(current_cos_angle)
+        end
       end
     end
 
-    def record_result(kase)
-      @result[kase] += 1
+    private 
+
+    def deviation_of(middle_value, _operator = nil)
+      # random = rand
+      # variance
+      # standart_deviation = (random - middle_value) ** 2 
+
+      middle_value
     end
 
-    def sample_size
-      @meta[:sample_size]
+    def calculate_offset(angle)
+      length = deviation_of(@character[:middle_length])
+
+      length * angle
     end
 
-    def set_probability_take_about_positions(raw_probability)
-      @probability = {
-        north: north_probability,
-        south: south_probability,
-        east: east_probability,
-        west: west_probability
-      }
-      @probability.each_key do |side|
-        next @probability[side] = raw_probability[side]**distance_to_opposite(side) if @probability[side].zero?
+    def calculate_new_cos_angle(cos_angle)
+      cos_scattering_angle = deviation_of(@character[:middle_cos_scattering_angle])
 
-        @probability[side] *= raw_probability[side]
-      end
-
-      @probability.merge!(stopped: raw_probability[:stopped])
-      normalize_probability
+      lambda_new_cos_angle(cos_angle, cos_scattering_angle)
     end
 
-    def normalize_probability
-      nomalization_koef = 1 / @probability.values.sum
-
-      @probability.each_key do |kase|
-        @probability[kase] *= nomalization_koef
-      end
+    def lambda_new_cos_angle(prev, nexd)
+      prev*nexd - Math.sqrt((1 - prev ** prev) * (1 - nexd ** nexd))
     end
 
-    def distance_to_opposite(side)
-      if %i[north south].include?(side)
-        @meta.dig(:space_size, :y)
-      elsif %i[east west].include?(side)
-        @meta.dig(:space_size, :x)
-      end
+    def run_back?(position)
+      position < 0
     end
 
-    def north_probability
-      @meta.dig(:start_position, :y) / @meta.dig(:space_size, :y).to_f
+    def run_forward?(position)
+      position > @meta[:substance_thickness]
     end
 
-    def south_probability
-      (@meta.dig(:space_size, :y) - @meta.dig(:start_position, :y)) / @meta.dig(:space_size, :y).to_f
+    def absorption?(position)
+      rand <= @character[:absorption_probability]
     end
 
-    def east_probability
-      @meta.dig(:start_position, :x) / @meta.dig(:space_size, :x).to_f
-    end
+    def record_run_back
+      @statistic[:back] += 1
+    end        
 
-    def west_probability
-      (@meta.dig(:space_size, :x) - @meta.dig(:start_position, :x)) / @meta.dig(:space_size, :x).to_f
-    end
+
+    def record_run_forward
+      @statistic[:forward] += 1
+    end        
+
+
+    def record_absorption
+      @statistic[:absorption] += 1
+    end        
   end
 end
