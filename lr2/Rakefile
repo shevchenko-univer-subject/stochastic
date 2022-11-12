@@ -244,5 +244,5 @@ end
 
 def set_quantity
   Tools::ConsoleManager.output "Set quantityfor Monte Carlo integration (the bigger the better) <default: 10_000>:"
-  Tools::ConsoleManager.input_f("\tquantity- ") || 10_000  
+  Tools::ConsoleManager.input_i("\tquantity- ") || 10_000  
 end
