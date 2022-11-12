@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pp'
+
 require_relative 'lib/particle_passage_simulation/experiment'
 require_relative 'lib/tools/console_manager'
 
@@ -8,41 +10,44 @@ task :run do
 
   Tools::ConsoleManager.output <<-OUTPUT
     ============== DATA ==============
-    Quantity: \t\t\t\t#{quantity}
+    Quantity: \t\t\t\t#{collected_data.dig(:quantity)}
 
     Characteristics of radiation and the layer of substance:
-    \t substance thickness:      #{collect_data.dig(:meta, :h)}
-    \t coocrdinate:              #{collect_data.dig(:meta, :x_0)}
-    \t radiation angle in grade: #{collect_data.dig(:meta, :teta_0)}
+    \t substance thickness:      #{collected_data.dig(:meta, :substance_thickness)}
+    \t coocrdinate:              #{collected_data.dig(:meta, :coocrdinate)}
+    \t radiation angle in grade: #{collected_data.dig(:meta, :cos_radiation_angle)}
 
     Characteristics of the process of interaction of particles with substance:
-    \t mean free run length:            #{collect_data.dig(:character, :l)}
-    \t particle absorption probability: #{collect_data.dig(:character, :p_a)}
-    \t scattering indicator:            #{collect_data.dig(:character, :n)}
-    \t average scattering angle:        #{collect_data.dig(:character, :omega_av)}
+    \t mean free run length:            #{collected_data.dig(:character, :middle_length)}
+    \t particle absorption probability: #{collected_data.dig(:character, :absorption_probability)}
+    \t scattering indicator:            #{collected_data.dig(:character, :scattering_indicator)}
+    \t average scattering angle:        #{collected_data.dig(:character, :middle_cos_scattering_angle)}
     ==============/DATA ==============
   OUTPUT
 
   puts 'Running...'
-  experiment = ParticlePassageSimulation::Experiment.call(collected_data)
+  experiment = ParticlePassageSimulation::Experiment.new(collected_data)
+  experiment.call
 
   puts 'Process...'
   statistic = experiment.statistic
+
+  pp statistic
 end
 
 def collect_data
   # {
-  #   quantity -- розмір вибірки для статичної оцінки результатів
+  #   quantity                 --q         -- розмір вибірки для статичної оцінки результатів
   #   meta{
-  #     h        -- товщина шару
-  #     x_0      -- координата поверхні шару що опромінюється
-  #     teta_0   -- кут падіння випромінювання на поверхню шару
+  #     substance_thickness    -- h        -- товщина шару
+  #     coocrdinate            -- x_0      -- координата поверхні шару що опромінюється
+  #     cos_radiation_angle    -- teta_0   -- кут падіння випромінювання на поверхню шару
   #   }
   #   character {
-  #     l        -- середня довжина вільного пробігу частинок у речовені шару
-  #     p_a      -- ймовірність поглинання частинок при взаємодії з речовеною
-  #     n        -- модельний параметер індикатриси розсіювання
-  #     omega_av -- середніц кут розсіювання частинок при взаємодії з речовиною
+  #     middle_length          -- l        -- середня довжина вільного пробігу частинок у речовені шару
+  #     absorption_probability -- p_a      -- ймовірність поглинання частинок при взаємодії з речовеною
+  #     scattering_indicator   -- n        -- модельний параметер індикатриси розсіювання
+  #     middle_cos_scattering_angle   -- omega_av -- середніц кут розсіювання частинок при взаємодії з речовиною
   #   }
   # }
   {
@@ -59,18 +64,18 @@ end
 def collect_meta
   Tools::ConsoleManager.output "Set characteristics of radiation and the layer of substance:"
   {
-    h:      Tools::ConsoleManager.input_f("\t substance thickness        <default: 2> = ") || 2.0,
-    x_0:    Tools::ConsoleManager.input_f("\t coocrdinate                <default: 0> = ") || 0.0,
-    teta_0: Tools::ConsoleManager.input_f("\t cos of radiation angle     <default: 1> = ") || 1.0
+    substance_thickness: Tools::ConsoleManager.input_f("\t substance thickness        <default: 2.0> = ") || 2.0,
+    coocrdinate:         Tools::ConsoleManager.input_f("\t coocrdinate                <default: 0.0> = ") || 0.0,
+    cos_radiation_angle: Tools::ConsoleManager.input_f("\t cos of radiation angle     <default: 1.0> = ") || 1.0
   }
 end
 
 def collect_character
   Tools::ConsoleManager.output "Set characteristics of the process of interaction of particles with substance:"
   {
-    l:       Tools::ConsoleManager.input_f("\t mean free run length              <default: 1>     = ") || 1.0, # аналогічно 74
-    p_a:      Tools::ConsoleManager.input_f("\t particle absorption probability   <default: 0.001> = ") || 0.001,
-    n:        Tools::ConsoleManager.input_f("\t scattering indicator              <default: 1>     = ") || 0.1
-    omega_av: Tools::ConsoleManager.input_f("\t cos ofaverage scattering angle    <default: 0>     = ") || 0.0 # проблеми з розумінням Ж мабуть потрібно відносно середнього значення рандомізувати відхилення
+    middle_length:          Tools::ConsoleManager.input_f("\t mean free run length            <default: 1.0>   = ") || 1.0, 
+    absorption_probability: Tools::ConsoleManager.input_f("\t particle absorption probability <default: 0.001> = ") || 0.001,
+    scattering_indicator:   Tools::ConsoleManager.input_f("\t scattering indicator            <default: 1.1>   = ") || 0.1,
+    middle_cos_scattering_angle:   Tools::ConsoleManager.input_f("\t cos of average scattering angle <default: 0.5>   = ") || 0.5 
   }
 end
