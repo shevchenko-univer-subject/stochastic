@@ -1,16 +1,21 @@
 require 'sinatra/base'
 require 'sinatra/json'
 
+require "#{controllers}/controller"
+
 class Stochastic < Sinatra::Base
   get '/' do
-    erb :index
+    controller = Controller.index
+    erb(controller.view_name)
   end
 
   get '/docs' do
-    erb :docs
+    controller = Controller.docs
+    erb(controller.view_name)
   end
 
   get '/process' do
-    json [4,5,6,7,8,8,3]
+    controller = Controller.process(request)
+    json(controller.response)
   end
 end
