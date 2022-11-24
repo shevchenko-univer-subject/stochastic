@@ -1,5 +1,5 @@
 function buildChart(data) {
-  const ctx = document.getElementById('chartSpace');
+  const ctx =  $("#chartSpace").find('canvas')
     
   new Chart(ctx, {
     type: 'line',
@@ -22,6 +22,10 @@ function buildChart(data) {
   });
 }
 
+function buildExportButton(){
+  // $("#exportSpace").add
+}
+
 $(document).ready(function() {
   $("#calcDistribution").submit( function(e){
     e.preventDefault();
@@ -31,6 +35,7 @@ $(document).ready(function() {
       url: '/process',
       success: function(result) {
         buildChart(result)
+        buildExportButton()
       }
     });
   });
