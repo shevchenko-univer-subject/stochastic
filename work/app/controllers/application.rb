@@ -27,8 +27,11 @@ class Stochastic < Sinatra::Base
         self
       end
 
-      def process(params)
-        distribution = MODELS::BernoulliDistribution.new
+      def process(request)
+        params = prepare_params(request)
+
+        distribution = MODELS::BernoulliDistribution.new # TODO: block initialize
+
         distribution.cdf = params[:cdf]
         distribution.pdf = params[:pdf]
         distribution.mean = params[:mean]
@@ -41,7 +44,9 @@ class Stochastic < Sinatra::Base
         self
       end
 
-      def csv_create(params)
+      def csv_create(request)
+        params = prepare_params(request)
+        
         csv_creator = MODELS::Csv::Creator.new
         csv_creator.table = params[:table]
         csv_creator.create
@@ -51,13 +56,21 @@ class Stochastic < Sinatra::Base
         self
       end
 
-      def csv_destroy(params)
+      def csv_destroy(request)
+        params = prepare_params(request)
+        
         csv_destroyer = MODELS::Csv::Destroyer.new
         csv_destroyer.path = params[:path]
 
         csv_destroyer.destroy
 
         self
+      end
+
+      private
+
+      def prepare_params(request)
+        request.params
       end
     end
   end

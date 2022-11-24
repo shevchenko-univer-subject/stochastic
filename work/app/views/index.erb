@@ -1,29 +1,29 @@
 <div class="row">
-  <form class="col-md-6 col-sm-12" id='calcDistribution'>
+  <form method="get" action="/process" class="col-md-6 col-sm-12" id='calcDistribution'>
     <div class="row ">
       <h1 class="text-center h3 fw-normal">Input data</h1>
     </div>
     
     <div class='row m-2'>
       <div class="form-floating col-6">
-        <input type="number" name="cdf", class='form-control', autofocus>
+        <input type="number" step="0.2" name="cdf" class='form-control' autofocus>
         <label class="ms-1">CDF</label>
       </div>
 
       <div class="form-floating col-6">
-        <input type="number" name="pdf", class='form-control', autofocus>
+        <input type="number" step="0.2" name="pdf" class='form-control' autofocus>
         <label class="ms-1">PDF</label>
       </div>
     </div>
 
     <div class='row m-2'>
       <div class="form-floating col-6">
-        <input type="number" name="mean", class='form-control', autofocus>
+        <input type="number" step="0.2" name="mean" class='form-control' autofocus>
         <label class="ms-1">Mean</label>
       </div>
 
       <div class="form-floating col-6">
-        <input type="number" name="mode", class='form-control', autofocus>
+        <input type="number" step="0.2" name="mode" class='form-control' autofocus>
         <label class="ms-1">Mode</label>
       </div>
     </div>
@@ -39,8 +39,8 @@
     <div class="row" id="chartSpace">
       <canvas></canvas>
     </div>
-    <div class="row" id="exportSpace">
-      
+    <div class="row justify-content-center">
+      <div id="exportSpace"></div>
     </div>
   </div>
 </div>
