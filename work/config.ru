@@ -1,9 +1,10 @@
+require 'sinatra/base'
 require 'pry'
+require 'pathname'
 
 # Models
 require './app/models/bernoulli_distribution'
-require './app/models/csv/creator'
-require './app/models/csv/destroyer'
+require './app/models/csv_creator'
 
 # Controllers
 require './app/controllers/application'

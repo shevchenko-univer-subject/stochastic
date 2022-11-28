@@ -58,7 +58,8 @@ function ajaxExport(data){
       url:  attrs.action,
       data: json_data,
       success: function(result) {
-        window.open(result.link);
+        console.log(result)
+        window.open(result);
       }
     });
   });

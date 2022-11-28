@@ -1,5 +1,3 @@
-require 'sinatra/base'
-
 class Stochastic < Sinatra::Base
   module Controllers
     class Application
@@ -30,12 +28,12 @@ class Stochastic < Sinatra::Base
       def process(request)
         params = prepare_params(request)
 
-        distribution = MODELS::BernoulliDistribution.new # TODO: block initialize
-
-        distribution.cdf = params[:cdf]
-        distribution.pdf = params[:pdf]
-        distribution.mean = params[:mean]
-        distribution.mode = params[:mode]
+        distribution = MODELS::BernoulliDistribution.new do |dist|
+          dist.cdf  = params[:cdf]
+          dist.pdf  = params[:pdf]
+          dist.mean = params[:mean]
+          dist.mode = params[:mode]
+        end
 
         distribution.process
 
@@ -47,22 +45,12 @@ class Stochastic < Sinatra::Base
       def csv_create(request)
         params = prepare_params(request)
 
-        csv_creator = MODELS::Csv::Creator.new
-        csv_creator.table = params[:table]
+        csv_creator = MODELS::CsvCreator.new do |csv|
+          csv.table = params
+        end
         csv_creator.create
-
-        @response = csv_creator.link
-
-        self
-      end
-
-      def csv_destroy(request)
-        params = prepare_params(request)
-
-        csv_destroyer = MODELS::Csv::Destroyer.new
-        csv_destroyer.path = params[:path]
-
-        csv_destroyer.destroy
+        link = request.env["HTTP_ORIGIN"] + '/export/' + csv_creator.name
+        @response = link
 
         self
       end

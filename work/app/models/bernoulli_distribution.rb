@@ -1,5 +1,3 @@
-require 'sinatra/base'
-
 class Stochastic < Sinatra::Base  
   module Models
     class BernoulliDistribution
@@ -12,6 +10,14 @@ class Stochastic < Sinatra::Base
 
       attr_reader :result
       
+      def initialize
+        if block_given?
+          yield(self) 
+        else
+          raise "need initialize object by block"
+        end
+      end
+
       def process 
         @result = build_result
       end

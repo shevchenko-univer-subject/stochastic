@@ -1,4 +1,3 @@
-require 'sinatra/base'
 require 'sinatra/json'
 
 class Stochastic < Sinatra::Base
@@ -18,11 +17,7 @@ class Stochastic < Sinatra::Base
   end
 
   post '/export/create' do 
-    answer = { link: 'http://localhost:9292/export/test' }
-    json answer
-  end
-
-  get '/export/destroy' do 
-
+    controller = CONTROLLERS::Application.csv_create(request)
+    json(controller.response)
   end
 end
