@@ -7,16 +7,6 @@ function convertFormToJSON(form) {
   return json;
 };
 
-function collectExportData(dom) {
-  var x = $(dom).data('x');
-  var y = $(dom).data('y');
-
-  return {
-    'x': x,
-    'y': y
-  };
-}
-
 function collectAttrsFrom(element){
   var form = $(element);
   var method = form.attr('method');
@@ -51,32 +41,17 @@ function renderChart(data) {
   });
 };
 
-function buildExportButton(data) {
-  const domButton = 
-    "<button "
-    + "method='post' "
-    + "action='/export/create' "
-    + "id='generateExport' "
-    + "class='btn btn-lg btn-primary col-6' "
-    + "data-x='" + data.x + "' " 
-    + "data-y='" + data.y + "' "
-    + ">Export CSV</button>"
-  return domButton;
-};
-
 function renderExportButton(data){
-  const exportButton = buildExportButton(data);
-  $("#exportSpace").replaceWith(exportButton);
-  ajaxExport();
+  $("#generateExport").removeAttr('hidden');
+  ajaxExport(data);
 }
 
-
-function ajaxExport(){
+function ajaxExport(data){
   $('#generateExport').click(function(e) {
     e.preventDefault();
 
     var attrs     = collectAttrsFrom(this);
-    var json_data = collectExportData(this);
+    var json_data = data;
     
     $.ajax({
       type: attrs.method,
