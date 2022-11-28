@@ -16,4 +16,13 @@ class Stochastic < Sinatra::Base
     controller = CONTROLLERS::Application.process(request)
     json(controller.response)
   end
+
+  post '/export/create' do 
+    answer = { link: 'http://localhost:9292/export/test' }
+    json answer
+  end
+
+  get '/export/destroy' do 
+
+  end
 end

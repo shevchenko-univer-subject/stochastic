@@ -1,3 +1,5 @@
+require 'pry'
+
 # Models
 require './app/models/bernoulli_distribution'
 require './app/models/csv/creator'

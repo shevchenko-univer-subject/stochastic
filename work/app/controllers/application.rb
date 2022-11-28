@@ -4,7 +4,7 @@ class Stochastic < Sinatra::Base
   module Controllers
     class Application
       def self.method_missing(method_name, *args)
-        new.method(method_name).call(*args)
+        new.public_method(method_name).call(*args)
       end
 
       attr_reader :response, :view_name
@@ -46,7 +46,7 @@ class Stochastic < Sinatra::Base
 
       def csv_create(request)
         params = prepare_params(request)
-        
+
         csv_creator = MODELS::Csv::Creator.new
         csv_creator.table = params[:table]
         csv_creator.create
@@ -58,7 +58,7 @@ class Stochastic < Sinatra::Base
 
       def csv_destroy(request)
         params = prepare_params(request)
-        
+
         csv_destroyer = MODELS::Csv::Destroyer.new
         csv_destroyer.path = params[:path]
 
