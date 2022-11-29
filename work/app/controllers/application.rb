@@ -49,8 +49,11 @@ class Stochastic < Sinatra::Base
           csv.table = params
         end
         csv_creator.create
-        link = request.env["HTTP_ORIGIN"] + '/export/' + csv_creator.name
-        @response = link
+        
+        @response = {
+          name: csv_creator.name,
+          link: request.env["HTTP_ORIGIN"] + '/export/' + csv_creator.name
+        }
 
         self
       end

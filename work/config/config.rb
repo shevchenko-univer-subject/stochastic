@@ -1,5 +1,3 @@
-require 'sinatra/cross_origin'
-
 class Stochastic < Sinatra::Base
   MODELS = Models
   CONTROLLERS = Controllers

@@ -32,7 +32,7 @@ class Stochastic < Sinatra::Base
       end
 
       def prepare_name!
-        @name = "Stochastic-#{rand}.csv"
+        @name = "Stochastic-#{Time.now.strftime("%d%m%Y-%H%M")}.csv"
       end
 
       def prepare_table!

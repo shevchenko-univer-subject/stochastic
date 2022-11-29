@@ -1,0 +1,11 @@
+require 'pry'
+
+
+desc "start server"
+task :run do
+  system 'bundle exec rackup'
+end
+
+task :clear do
+  system "rm #{pwd}/public/export/*"
+end
