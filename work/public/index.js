@@ -96,6 +96,8 @@ function renderInfo(data) {
   $("#infoAcMean").text(data.actual_mean);
   $("#infoVariance").text(data.variance);
   $("#infoMistake").text(data.mistake);
+  $("#infoDelta").text(data.delta);
+  $("#infoBorder").text(data.border);
   $("#infoQuality").text(buildQuality(data.quality));
   $("#infoPdfS").text(data.pdf.success);
   $("#infoPdfF").text(data.pdf.failure);

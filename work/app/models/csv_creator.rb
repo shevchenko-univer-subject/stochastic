@@ -3,7 +3,7 @@ class Stochastic < Sinatra::Base
     class CsvCreator
       require 'csv'
 
-      attr_accessor :table
+      attr_accessor :values, :table
       attr_reader :name, :export_path
 
       def initialize
@@ -36,11 +36,21 @@ class Stochastic < Sinatra::Base
       end
 
       def prepare_table!
-        @table = @table.map do |axis, values|
+        @table = @values[:chart.to_s].map do |axis, values|
           arr = [] << axis.to_s
           arr << values
           arr.flatten
         end 
+
+        @table << ["Expect mean",      @values[:meta.to_s][:expect_mean.to_s]]
+        @table << ["Actual mean",      @values[:meta.to_s][:actual_mean.to_s]]
+        @table << ["Variance",         @values[:meta.to_s][:variance.to_s]]
+        @table << ["Standart mistake", @values[:meta.to_s][:mistake.to_s]]
+        @table << ["Delta",            @values[:meta.to_s][:delta.to_s]]
+        @table << ["Border",           @values[:meta.to_s][:border.to_s]]
+        @table << ["Quality",          @values[:meta.to_s][:quality.to_s]]
+        @table << ["PDF: Win",         @values[:meta.to_s][:pdf.to_s][:success.to_s]]
+        @table << ["PDF: Lose",        @values[:meta.to_s][:pdf.to_s][:failure.to_s]]
       end
     end
   end

@@ -44,7 +44,7 @@ class Stochastic < Sinatra::Base
         params = prepare_params(request)
 
         csv_creator = MODELS::CsvCreator.new do |csv|
-          csv.table = params
+          csv.values = params
         end
         csv_creator.create
         

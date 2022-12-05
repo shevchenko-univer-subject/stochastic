@@ -23,8 +23,8 @@ class Stochastic < Sinatra::Base
 
         @n.times do
           current_rand = rand
-          next success += 1 if current_rand.between?(0, @p) && current_rand != @p
-          next failure += 1 if current_rand.between?(@p, 1) && current_rand != 1
+          next success += 1 if current_rand.between?(0, @p) 
+          next failure += 1 if current_rand.between?(@p, 1) 
         end
 
         build_result(success, failure)
@@ -74,7 +74,7 @@ class Stochastic < Sinatra::Base
         @result[:mistake] = Math.sqrt((@p * (1 - @p))/@n)
 
         @result[:delta] = (@result[:expect_mean] - @result[:actual_mean]).abs
-        @result[:border] = @result[:mistake] / 3.to_f
+        @result[:border] = @result[:mistake].to_f
 
         @result[:quality] = (@result[:delta] <= @result[:border])
 
