@@ -18,10 +18,10 @@ function collectAttrsFrom(element){
 };
 
 function renderChart(data) {
-  const ctx =  $("#chartSpace").find('canvas')
-    
+  const ctx =  $("#chartSpace").find('canvas');
+  console.log('data');
   new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: data.x,
       datasets: [{
@@ -32,10 +32,19 @@ function renderChart(data) {
       }]
     },
     options: {
+      legend: {
+        display: false,
+      },
       scales: {
-        y: {
-          beginAtZero: true
-        }
+        yAxes: [{
+          display: true,
+          ticks: {
+            beginAtZero: true,
+            steps: 10,
+            stepValue: 5,
+            max: 1
+          }
+        }]
       }
     }
   });
@@ -86,7 +95,8 @@ function ajaxCalc(){
       data: json_data,
       success: function(result) {
         renderExportButton(result);
-        renderChart(result);
+        // renderInfo(result.meta);
+        renderChart(result.chart);
       }
     });
   });

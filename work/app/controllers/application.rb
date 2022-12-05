@@ -29,10 +29,8 @@ class Stochastic < Sinatra::Base
         params = prepare_params(request)
 
         distribution = MODELS::BernoulliDistribution.new do |dist|
-          dist.cdf  = params[:cdf]
-          dist.pdf  = params[:pdf]
-          dist.mean = params[:mean]
-          dist.mode = params[:mode]
+          dist.probability = params['probability'].to_f
+          dist.quantity  = params['quantity'].to_i
         end
 
         distribution.process
