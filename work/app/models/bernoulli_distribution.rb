@@ -73,7 +73,7 @@ class Stochastic < Sinatra::Base
         @result[:probability][:failure] = failure/@n.to_f
         
         @result[:pdf][:success] = build_pdf(@result[:probability][:success], 1)
-        @result[:pdf][:success] = build_pdf(@result[:probability][:failure], 0)
+        @result[:pdf][:failure] = build_pdf(@result[:probability][:failure], 0)
       end
 
       def build_pdf(prob, x)

@@ -19,7 +19,7 @@ function collectAttrsFrom(element){
 
 function renderChart(data) {
   const ctx =  $("#chartSpace").find('canvas');
-  console.log('data');
+
   new Chart(ctx, {
     type: 'bar',
     data: {
@@ -82,6 +82,14 @@ function ajaxExport(data){
   });
 };
 
+function renderInfo(data) {
+  $("#infoMean").text(data.mean);
+  $("#infoVariance").text(data.variance);
+  $("#infoPdfS").text(data.pdf.success);
+  $("#infoPdfF").text(data.pdf.failure);
+  $("#distInfo").removeAttr('hidden');
+}
+
 function ajaxCalc(){
   $("#calcDistribution").submit( function(e){
     e.preventDefault();
@@ -95,7 +103,7 @@ function ajaxCalc(){
       data: json_data,
       success: function(result) {
         renderExportButton(result);
-        // renderInfo(result.meta);
+        renderInfo(result.meta);
         renderChart(result.chart);
       }
     });
