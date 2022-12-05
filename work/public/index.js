@@ -82,11 +82,24 @@ function ajaxExport(data){
   });
 };
 
+function buildQuality(quality) {
+  var response = ''
+
+  if( quality == true ){ response = 'okey'; } 
+  else { response = 'bad'; }
+
+  return response;
+}
+
 function renderInfo(data) {
-  $("#infoMean").text(data.mean);
+  $("#infoExMean").text(data.expect_mean);
+  $("#infoAcMean").text(data.actual_mean);
   $("#infoVariance").text(data.variance);
+  $("#infoMistake").text(data.mistake);
+  $("#infoQuality").text(buildQuality(data.quality));
   $("#infoPdfS").text(data.pdf.success);
   $("#infoPdfF").text(data.pdf.failure);
+
   $("#distInfo").removeAttr('hidden');
 }
 

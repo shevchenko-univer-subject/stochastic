@@ -23,12 +23,13 @@ class Stochastic < Sinatra::Base
 
         @n.times do
           current_rand = rand
-          next success += 1 if current_rand.between?(0, @p) && current_rand != 0
-          next failure += 1 if current_rand.between?(@p, 1) && current_rand != @p
+          next success += 1 if current_rand.between?(0, @p) && current_rand != @p
+          next failure += 1 if current_rand.between?(@p, 1) && current_rand != 1
         end
 
         build_result(success, failure)
-
+        floorize_values(@result)
+        STDOUT.puts(@result)
         self
       end
 
@@ -66,8 +67,16 @@ class Stochastic < Sinatra::Base
       private
 
       def build_result(success, failure)
-        @result[:mean] = @p
+        @result[:expect_mean] = @p
+        @result[:actual_mean] = success/@n.to_f
+
         @result[:variance] = @p * (1 - @p)
+        @result[:mistake] = Math.sqrt((@p * (1 - @p))/@n)
+
+        @result[:delta] = (@result[:expect_mean] - @result[:actual_mean]).abs
+        @result[:border] = @result[:mistake] / 3.to_f
+
+        @result[:quality] = (@result[:delta] <= @result[:border])
 
         @result[:probability][:success] = success/@n.to_f
         @result[:probability][:failure] = failure/@n.to_f
@@ -76,19 +85,27 @@ class Stochastic < Sinatra::Base
         @result[:pdf][:failure] = build_pdf(@result[:probability][:failure], 0)
       end
 
+      def floorize_values(current_hash)
+        current_hash.each do |k, v|
+          next floorize_values(v) if v.is_a? Hash
+          next if v.is_a?(TrueClass) || v.is_a?(FalseClass)
+          current_hash[k] = v.to_f.floor(4)
+        end
+      end
+
       def build_pdf(prob, x)
         prob**x * (1 - prob)**(1 - x)
       end
 
       def build_chart_data
         {
-          x: [0, 1],
+          x: ['lose', 'win'],
           y: [ @result[:probability][:failure], @result[:probability][:success] ] 
         }
       end
 
       def result_builded?
-        @result[:mean] &&
+        @result[:expect_mean] &&
         @result[:variance] &&
         @result[:probability][:success] &&
         @result[:probability][:failure] &&
